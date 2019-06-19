@@ -26,11 +26,19 @@ namespace StudentMaster.Controllers
         }
         [HttpPost]
         [Route("login")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([FromBody] LoginViewModel model)
         {
             var user = await userManager.FindByNameAsync(model.UserName);
             if(user !=null && await userManager.CheckPasswordAsync(user,model.Password))
             {
+                // проверяем, подтвержден ли email
+                if (!await userManager.IsEmailConfirmedAsync(user))
+                {
+                    ModelState.AddModelError(string.Empty, "Вы не подтвердили свой email");
+                    return BadRequest("Вы не подтвердили свой email");
+                }
+
                 var claims = new[]
                 {
                     new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
