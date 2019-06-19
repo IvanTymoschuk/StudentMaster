@@ -9,7 +9,7 @@ using StudentMaster.Data;
 namespace StudentMaster.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
+
     public class SampleDataController : Controller
     {
         private ApplicationDbContext context;

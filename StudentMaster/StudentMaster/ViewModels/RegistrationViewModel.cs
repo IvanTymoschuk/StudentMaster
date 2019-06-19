@@ -1,18 +1,17 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace StudentMaster.Models
+namespace StudentMaster.ViewModels
 {
-    public class User : IdentityUser
+    public class RegistrationViewModel
     {
+        public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public DateTime RegistrationDate { get; set; }
-        public DateTime StudyingDate { get; set; }
         public DateTime BirthDate { get; set; }
+        public string Password { get; set; }
 
     }
 }
