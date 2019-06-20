@@ -31,6 +31,13 @@ namespace StudentMaster.Controllers
             var user = await userManager.FindByNameAsync(model.UserName);
             if(user !=null && await userManager.CheckPasswordAsync(user,model.Password))
             {
+                // проверяем, подтвержден ли email
+                if (!await userManager.IsEmailConfirmedAsync(user))
+                {
+                    
+                    return BadRequest("You didn`t confirm your email");
+                }
+
                 var claims = new[]
                 {
                     new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
