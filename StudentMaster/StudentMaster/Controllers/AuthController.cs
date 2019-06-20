@@ -28,7 +28,7 @@ namespace StudentMaster.Controllers
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginViewModel model)
         {
-            var user = await userManager.FindByNameAsync(model.UserName);
+            var user = await userManager.FindByNameAsync(model.Email);
             if(user !=null && await userManager.CheckPasswordAsync(user,model.Password))
             {
                 // проверяем, подтвержден ли email
