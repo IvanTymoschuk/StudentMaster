@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { login } from '../../actions/authActions';
 import { connect } from 'react-redux';
+import classnames from 'classnames';
 
 
 class LoginForm extends Component {
@@ -12,7 +13,7 @@ class LoginForm extends Component {
             email: '',
             password: '',
             errors: {},
-            isLoading: false
+            isLoading: false,
         }
 
         this.onChange = this.onChange.bind(this);
@@ -53,7 +54,7 @@ class LoginForm extends Component {
         if (this.state.email === '') errors.email = "Can't be empty!"
         else if (this.isValidEmail(this.state.email)) errors.email = "Email is not valid"
         if (this.state.password === '') errors.password = "Can't be empty!"
-        else if (this.isValidPassword(this.state.password)) errors.password = "Password is not valid"
+        else if (this.isValidPassword(this.state.password)) errors.password = "Password must be at least 6 characters and contain digits, upper or lower case"
 
         const isValid = Object.keys(errors).length === 0
         if (isValid) {
@@ -73,9 +74,11 @@ class LoginForm extends Component {
         const { errors, isLoading } = this.state;
         return (
             <form onSubmit={this.onSubmit}>
-                <h1 className="header">Login</h1>
+                <div className="text-center mb-4">
+                <h2 className="header">Log in</h2>
+                </div>
                 {errors.form && <div className="alert alert-danger">{errors.form}</div>}
-                <div className="form-group">
+                <div className={classnames('form-group', { 'has-error': !!errors.email })}>
                     <input
                         value={this.state.email}
                         className="form-control"
@@ -87,8 +90,10 @@ class LoginForm extends Component {
                         placeholder="Email"
                     />
                     {!!errors.email ? <span className="help-block">{errors.email}</span> : ''}
+
                 </div>
-                <div className="form-group">
+
+                <div className={classnames('form-group', { 'has-error': !!errors.password })}>
                     <input
                         value={this.state.password}
                         className="form-control"
@@ -102,8 +107,13 @@ class LoginForm extends Component {
                     />
                     {!!errors.password ? <span className="help-block">{errors.password}</span> : ''}
                 </div>
+                {/* {!!serverAnswer ?
+                    <div className="alert alert-success">
+                        {serverAnswer}
+                    </div> : ''} */}
+                <button className="btn btn-info btn-block " type="submit" >Log in</button>
 
-                <button className="btn btn-primary " type="submit" label="submit">Submit</button>
+
             </form>
         );
     }

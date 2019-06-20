@@ -50,11 +50,11 @@ namespace StudentMaster.Controllers
         [HttpPost]
         [Route("forgotpassword")]
 
-        public async Task<IActionResult> ForgotPassword(string Email)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var user = await userManager.FindByNameAsync(Email);
+                var user = await userManager.FindByNameAsync(model.Email);
                 if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
                 {
                     return BadRequest("Email is not registred in system");
@@ -63,11 +63,11 @@ namespace StudentMaster.Controllers
                 var code = await userManager.GeneratePasswordResetTokenAsync(user);
                 var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
                 EmailService emailService = new EmailService();
-                await emailService.SendEmailAsync(Email, "Reset Password",
+                await emailService.SendEmailAsync(model.Email, "Reset Password",
                     $"Для сброса пароля пройдите по ссылке: <a href='{callbackUrl}'>link</a>");
                 return Ok("ForgotPasswordConfirmation");
             }
-            return BadRequest(Email);
+            return BadRequest(model.Email);
         }
     }
 }
