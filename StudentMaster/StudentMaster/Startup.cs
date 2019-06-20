@@ -29,7 +29,7 @@ namespace StudentMaster
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
+            services.AddCors();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -108,7 +108,12 @@ namespace StudentMaster
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
-           
+            app.UseCors(builder => builder
+                 .AllowAnyOrigin()
+                 .AllowAnyHeader()
+                 .AllowAnyMethod()
+                 .AllowCredentials()
+);
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
