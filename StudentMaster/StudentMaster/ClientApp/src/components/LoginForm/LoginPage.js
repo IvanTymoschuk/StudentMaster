@@ -1,20 +1,34 @@
 import React from 'react';
+import { LinkContainer } from "react-router-bootstrap";
 import LoginForm from './LoginForm';
+import { Col, Row, Panel } from 'react-bootstrap';
+
 
 
 
 class LoginPage extends React.Component {
     render() {
-        const {userSignUpRequest} = this.props;
-      return (
-        <div className="row">
-          <div className="col-md-4 col-md-offset-4">
-            <LoginForm />
-          </div>
-        </div>
-      );
-    }
-  }
-  
+        return (
 
-  export default LoginPage;
+            <Row>
+                <Col md={4} mdOffset={4}>
+                    <Panel>
+
+                        <LoginForm />
+                        <LinkContainer to="/forgotpassword" >
+                            <div className="text-center" >
+
+                                <a className="mt-2">Forgot Password?</a>
+
+
+                            </div>
+                        </LinkContainer>
+                    </Panel>
+                </Col>
+            </Row>
+        );
+    }
+}
+
+
+export default LoginPage;

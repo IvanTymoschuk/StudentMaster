@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -29,45 +25,46 @@ namespace StudentMaster.Controllers
 
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return BadRequest(model);
+
+
+                var user = await userManager.FindByIdAsync(model.UserId);
+                if (user == null)
+                {
+                    return BadRequest(new { invalid = "UserId is not registred in system" });
+                }
+                var result = await userManager.ResetPasswordAsync(user, model.Code, model.Password);
+                if (result.Succeeded)
+                {
+                    return Ok();
+                }
             }
-            var user = await userManager.FindByNameAsync(model.Email);
-            if (user == null)
-            {
-                return BadRequest("ResetPasswordConfirmation");
-            }
-            var result = await userManager.ResetPasswordAsync(user, model.Code, model.Password);
-            if (result.Succeeded)
-            {
-                return Ok("ResetPasswordConfirmation");
-            }
-           
-            return BadRequest(model);
+            return BadRequest(ModelState);
+
         }
 
         [HttpPost]
         [Route("forgotpassword")]
 
-        public async Task<IActionResult> ForgotPassword(string Email)
+        public async Task<IActionResult> ForgotPassword([FromBody]ForgotPasswordViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var user = await userManager.FindByNameAsync(Email);
+                var user = await userManager.FindByNameAsync(model.Email);
                 if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
                 {
-                    return BadRequest("Email is not registred in system");
+                    return BadRequest(new { invalid = "This email is not registred in system" });
                 }
 
                 var code = await userManager.GeneratePasswordResetTokenAsync(user);
-                var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                var callbackUrl = Url.Action("", "resetpassword", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
                 EmailService emailService = new EmailService();
-                await emailService.SendEmailAsync(Email, "Reset Password",
-                    $"Для сброса пароля пройдите по ссылке: <a href='{callbackUrl}'>link</a>");
-                return Ok("ForgotPasswordConfirmation");
+                await emailService.SendEmailAsync(model.Email, "Reset Password",
+                    $"For reset password - follow: <a href='{callbackUrl}'>link</a>");
+                return Ok(new { answer = "Check your email" });
             }
-            return BadRequest(Email);
+            return BadRequest(ModelState);
         }
     }
 }
