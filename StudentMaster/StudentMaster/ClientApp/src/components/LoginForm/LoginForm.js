@@ -13,6 +13,7 @@ class LoginForm extends Component {
             email: '',
             password: '',
             errors: {},
+            done: false,
             isLoading: false,
         }
 
@@ -40,6 +41,14 @@ class LoginForm extends Component {
                 { [name]: value })
         }
     }
+    state = {
+        email: '',
+        password: '',
+        errors: {
+        },
+        done: false,
+        isLoading: false
+    }
     isValidPassword(email) {
 
         return !/^(?=.*\d)(?=.*[a-zA-Z]).{6,20}$/.test(email);
@@ -62,8 +71,9 @@ class LoginForm extends Component {
             this.setState({ isLoading: true });
             this.props.login(this.state).then(
 
-                () => this.context.router.history.push('/'));
-            (err) => this.setState({ errors: err.response.data, isLoading: false })
+                () =>{ this.setState({ done: true }),
+                    this.context.router.history.push('/');},
+            (err) => this.setState({ errors: err.response.data, isLoading: false }))
         }
         else {
             this.setState({ errors });
@@ -75,8 +85,12 @@ class LoginForm extends Component {
         return (
             <form onSubmit={this.onSubmit}>
                 <div className="text-center mb-4">
-                <h2 className="header">Log in</h2>
+                    <h2 className="header">Log in</h2>
                 </div>
+                {!!errors.invalid ?
+                    <div className="alert alert-danger">
+                        {errors.invalid}.
+                </div> : ''}
                 {errors.form && <div className="alert alert-danger">{errors.form}</div>}
                 <div className={classnames('form-group', { 'has-error': !!errors.email })}>
                     <input
@@ -107,15 +121,12 @@ class LoginForm extends Component {
                     />
                     {!!errors.password ? <span className="help-block">{errors.password}</span> : ''}
                 </div>
-                {/* {!!serverAnswer ?
-                    <div className="alert alert-success">
-                        {serverAnswer}
-                    </div> : ''} */}
                 <button className="btn btn-info btn-block " type="submit" >Log in</button>
 
 
             </form>
         );
+        
     }
 }
 
