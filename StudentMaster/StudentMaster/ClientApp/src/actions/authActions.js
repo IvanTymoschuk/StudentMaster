@@ -23,12 +23,19 @@ export function forgotPassword(data) {
         return axios.post('https://localhost:44326/api/Account/forgotpassword', data);
     }
 };
+
 export function resetPassword(data) {
     return dispatch => {
         return axios.post('https://localhost:44326/api/Account/resetpassword', data);
     }
 };
+export function register(data) {
 
+    return dispatch => {
+        return axios.post('https://localhost:44326/api/Registration/registration', data)
+
+    }
+}
 export function login(data) {
 
     return dispatch => {
