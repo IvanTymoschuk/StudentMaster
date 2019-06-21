@@ -36,6 +36,18 @@ export function register(data) {
 
     }
 }
+export function social_login(data) {
+
+    return dispatch => {
+        return axios.post('https://localhost:44326/api/Account/sociallogin', data).then(res => {
+
+            const token = res.data.token;
+            localStorage.setItem('jwtToken', token);
+            setAuthorizationToken(token);
+            dispatch(setCurrentUser(jwtDecode(token)));
+        });
+    }
+}
 export function login(data) {
 
     return dispatch => {

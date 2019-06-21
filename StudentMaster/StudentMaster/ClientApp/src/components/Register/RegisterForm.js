@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { connect } from "react-redux";
-import { register } from "../../actions/authActions";
+import { register, social_login } from "../../actions/authActions";
 import { Redirect } from 'react-router-dom';
+import GoogleLogin from 'react-google-login';
+import FacebookLogin from 'react-facebook-login';
 import { Row } from 'react-bootstrap'
 
 
-//const defaultPath = "D:/Study/React/WebBlog/ClientApp//src//components/auth/register/default-user.png"
+
 class RegisterForm extends Component {
     constructor(props) {
         super(props);
@@ -23,6 +25,7 @@ class RegisterForm extends Component {
             lastName: '',
             dateOfBirth: ''
         };
+        this.signup = this.signup.bind(this);
     }
 
 
@@ -54,6 +57,37 @@ class RegisterForm extends Component {
 
         return !/.+@.+\.[A-Za-z]+$/.test(email);
     }
+    signup(res, type) {
+        if (type === 'facebook') {
+            this.props.social_login({
+                name: res.name,
+                email: res.email
+            })
+                .then(() => {this.setState({ done: true }) ; this.context.router.history.push('/') },
+
+                    (err) => {
+                        this.setState({ errors: err.response.data, isLoading: false });
+                    }
+                );
+        };
+
+
+        // if (type === 'google') {
+        //     this.props.social_login({
+        //         name: res.w3.ig,
+        //         email: res.w3.U3
+        //     })
+        //         .then(() => { this.context.router.history.push('/'); this.setState({ done: true }) },
+
+        //             (err) => {
+        //                 this.setState({ errors: err.response.data, isLoading: false });
+        //             }
+        //         );
+        // };
+    }
+
+
+
     onSubmitForm = (e) => {
         e.preventDefault();
 
@@ -71,13 +105,15 @@ class RegisterForm extends Component {
         const isValid = Object.keys(errors).length === 0
         if (isValid) {
             const { email, password, confirmPassword,
-                firstName, lastName, dateOfBirth} = this.state;
+                firstName, lastName, dateOfBirth } = this.state;
             this.setState({ isLoading: true });
-            this.props.register({ email, password, confirmPassword,
-                firstName, lastName, dateOfBirth})
+            this.props.register({
+                email, password, confirmPassword,
+                firstName, lastName, dateOfBirth
+            })
                 .then(
-                    () =>this.setState({ done: true } ),
-                    
+                    () => this.setState({ done: true }),
+
                     (err) => {
                         this.setState({ errors: err.response.data, isLoading: false });
                     }
@@ -86,10 +122,20 @@ class RegisterForm extends Component {
         else {
             this.setState({ errors });
         }
-      
+
     }
     render() {
         const { errors, isLoading } = this.state;
+        const responseGoogle = (response) => {
+            console.log("google");
+
+            console.log(response);
+            this.signup(response, 'google');
+        }
+        const responseFacebook = (response) => {
+            console.log(response);
+            this.signup(response, 'facebook');
+        }
         const form = (
             <form onSubmit={this.onSubmitForm}>
                 <h2 className="header text-center">Registration</h2>
@@ -111,7 +157,7 @@ class RegisterForm extends Component {
                 </div>
 
                 <div className={classnames('form-group', { 'has-error': !!errors.password })}>
-                   
+
                     <input type="password"
                         className="form-control"
                         id="password"
@@ -123,7 +169,7 @@ class RegisterForm extends Component {
                 </div>
 
                 <div className={classnames('form-group', { 'has-error': !!errors.confirmPassword })}>
-                   
+
                     <input type="password"
                         className="form-control"
                         id="confirmPassword"
@@ -134,7 +180,7 @@ class RegisterForm extends Component {
                     {!!errors.confirmPassword ? <span className="help-block">{errors.confirmPassword}</span> : ''}
                 </div>
                 <div className={classnames('form-group', { 'has-error': !!errors.firstName })}>
-                    
+
                     <input type="text"
                         className="form-control"
                         id="firstName"
@@ -168,10 +214,25 @@ class RegisterForm extends Component {
                     {!!errors.dateOfBirth ? <span className="help-block">{errors.dateOfBirth}</span> : ''}
                 </div>
                 <div className="form-group">
-               
-                   
+
+
                     <button type="submit" className="btn btn-info btn-block" disabled={isLoading}>Register</button>
-                
+
+                </div>
+                <div>
+                    <GoogleLogin
+                        clientId="465803180827-n8oa659teb415347p0a3b2qoq9ir0gvg.apps.googleusercontent.com"
+                        buttonText="Login with google"
+                        onSuccess={responseGoogle}
+                        onFailure={responseGoogle}
+                        cookiePolicy={'single_host_origin'}
+                    />
+                    <FacebookLogin
+                        appId="355421778452383"
+                        autoLoad={true}
+                        fields="name,email"
+                        // onClick={componentClicked}
+                        callback={responseFacebook} />
                 </div>
 
             </form>
@@ -182,10 +243,12 @@ class RegisterForm extends Component {
         );
     }
 }
-    
+
 RegisterForm.propTypes =
     {
-        register: PropTypes.func.isRequired
+        register: PropTypes.func.isRequired,
+        social_login: PropTypes.func.isRequired
+
     }
 
-export default connect(null, { register })(RegisterForm);
+export default connect(null, { register ,social_login})(RegisterForm);
