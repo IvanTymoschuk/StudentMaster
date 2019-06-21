@@ -26,7 +26,7 @@ namespace StudentMaster.Controllers
         }
      
         [HttpPost("registration")]
-        public async Task<IActionResult> Reg([FromBody]RegistrationViewModel model)
+        public async Task<IActionResult> Registration([FromBody]RegistrationViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -48,24 +48,25 @@ namespace StudentMaster.Controllers
             if (!result.Succeeded)
             {
                
-                    return new BadRequestObjectResult("Error");
+                    return  BadRequest(new { invalid =  "Account with this email has already registred" });
                 
             }
             var code = await userManager.GenerateEmailConfirmationTokenAsync(userIdentity);
             var callbackUrl = Url.Action(
-                "ConfirmEmail",
-                "Registration",
+                "",
+                "confirmemail",
                 new { userId = userIdentity.Id, code = code },
                 protocol: HttpContext.Request.Scheme);
             EmailService emailService = new EmailService();
             await emailService.SendEmailAsync(model.Email, "Confirm your account",
-                $"Подтвердите регистрацию, перейдя по ссылке: <a href='{callbackUrl}'>link</a>");
+                $"Confirm registration, follow : <a href='{callbackUrl}'>link</a>");
 
-            return Content("Для завершения регистрации проверьте электронную почту и перейдите по ссылке, указанной в письме");
+            return Content("For the finish of registration - foolow link in your email");
           
         }
 
         [HttpGet]
+        [HttpPost("confirmemail")]
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
