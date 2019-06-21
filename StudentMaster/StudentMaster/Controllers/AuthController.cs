@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -28,6 +25,10 @@ namespace StudentMaster.Controllers
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(model);
+            }
             var user = await userManager.FindByNameAsync(model.Email);
             if(user !=null && await userManager.CheckPasswordAsync(user,model.Password))
             {
@@ -35,7 +36,7 @@ namespace StudentMaster.Controllers
                 if (!await userManager.IsEmailConfirmedAsync(user))
                 {
                     
-                    return BadRequest("You didn`t confirm your email");
+                    return BadRequest(new { invalid = "You didn`t confirm your email" });
                 }
 
                 var claims = new[]
@@ -58,10 +59,9 @@ namespace StudentMaster.Controllers
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token),
                     expiration = token.ValidTo
-                    
                 });
             }
-            return Unauthorized();
+            return BadRequest(new { invalid = "Email or password is not correct" });
         }
     }
 }
