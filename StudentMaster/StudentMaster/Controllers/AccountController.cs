@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using StudentMaster.Data;
 using StudentMaster.Models;
 using StudentMaster.Services;
 using StudentMaster.ViewModels;
@@ -18,9 +20,10 @@ namespace StudentMaster.Controllers
     public class AccountController : ControllerBase
     {
         private UserManager<User> userManager;
-
-        public AccountController(UserManager<User> userManager)
+        private readonly ApplicationDbContext _appDbContext;
+        public AccountController(UserManager<User> userManager, ApplicationDbContext appDbContext)
         {
+            this._appDbContext = appDbContext;
             this.userManager = userManager;
         }
 
@@ -93,6 +96,24 @@ namespace StudentMaster.Controllers
             }
             return BadRequest(ModelState);
 
+        }
+
+        [HttpPost]
+        [Route("pickstudydate")]
+        public async Task<IActionResult> PickStudyDate([FromBody]StudyDateViewModel model)
+        {
+            
+            if (!ModelState.IsValid)
+                return BadRequest(model);
+            var user = await userManager.FindByIdAsync(model.UserId);
+            if (user == null)
+            {
+                return BadRequest(new { invalid = "UserId is not registred in system" });
+            }
+            user.StudyDate = model.StudyDate;
+            _appDbContext.Entry(user).State = EntityState.Modified;
+            _appDbContext.SaveChanges();
+            return Ok();
         }
 
         [HttpPost]
