@@ -23,12 +23,31 @@ export function forgotPassword(data) {
         return axios.post('https://localhost:44326/api/Account/forgotpassword', data);
     }
 };
+
 export function resetPassword(data) {
     return dispatch => {
         return axios.post('https://localhost:44326/api/Account/resetpassword', data);
     }
 };
+export function register(data) {
 
+    return dispatch => {
+        return axios.post('https://localhost:44326/api/Registration/registration', data)
+
+    }
+}
+export function social_login(data) {
+
+    return dispatch => {
+        return axios.post('https://localhost:44326/api/Account/sociallogin', data).then(res => {
+
+            const token = res.data.token;
+            localStorage.setItem('jwtToken', token);
+            setAuthorizationToken(token);
+            dispatch(setCurrentUser(jwtDecode(token)));
+        });
+    }
+}
 export function login(data) {
 
     return dispatch => {

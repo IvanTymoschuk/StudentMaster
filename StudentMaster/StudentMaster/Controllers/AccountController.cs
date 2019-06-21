@@ -1,7 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using StudentMaster.Models;
 using StudentMaster.Services;
 using StudentMaster.ViewModels;
@@ -17,6 +22,52 @@ namespace StudentMaster.Controllers
         public AccountController(UserManager<User> userManager)
         {
             this.userManager = userManager;
+        }
+
+        [HttpPost("sociallogin")]
+        public async Task<IActionResult> SocialNetworkLogin([FromBody]SocialLoginViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Failed to login with social network");
+            }
+
+            var user = userManager.FindByEmailAsync(model.Email).Result;
+            if (user == null)
+            {
+                user = new User
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FirstName = model.Name
+                };
+                var result = await userManager.CreateAsync(user);
+                if (!result.Succeeded)
+                {
+                    return BadRequest(new { invalid = "Something went wrong!" });
+                }
+            }
+            var claims = new[]
+                {
+                    new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+
+                };
+            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authnetication"));
+
+            var token = new JwtSecurityToken(
+                expires: DateTime.UtcNow.AddHours(1),
+                claims: claims,
+                issuer: "http://test.com",
+                audience: "http://test.com",
+                signingCredentials: new Microsoft.IdentityModel.Tokens.SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
+
+                );
+            return Ok(new
+            {
+                token = new JwtSecurityTokenHandler().WriteToken(token),
+                expiration = token.ValidTo
+            });
         }
 
 
