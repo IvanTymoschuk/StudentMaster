@@ -8,6 +8,9 @@ import RegisterPage from './components/Register/RegisterPage'
 import ForgotPasswordPage from './components/ForgotPasswordPage';
 import ResetPasswordPage from './components/ResetPasswordPage';
 import ConfirmEmail from './components/Confirmation/ConfirmEmailPage';
+ import AdminPage from './components/Admin/AdminPage';
+ import requireAuth from "./utils/requireAuth";
+
 
 
 
@@ -23,7 +26,7 @@ export default () => (
     <Route path="/forgotpassword" component={ForgotPasswordPage} />
     <Route path="/resetpassword" component={ResetPasswordPage} />
     <Route path="/confirmemail" component={ConfirmEmail} />
-
+     <Route path='/admin' component={requireAuth(AdminPage,"admin")} /> 
 
   </Layout>
 );

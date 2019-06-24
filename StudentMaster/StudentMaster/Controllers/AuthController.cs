@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -21,6 +22,8 @@ namespace StudentMaster.Controllers
         {
             this.userManager = userManager;
         }
+
+        
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginViewModel model)
@@ -32,33 +35,36 @@ namespace StudentMaster.Controllers
             var user = await userManager.FindByNameAsync(model.Email);
             if(user !=null && await userManager.CheckPasswordAsync(user,model.Password))
             {
-                // проверяем, подтвержден ли email
+                
                 if (!await userManager.IsEmailConfirmedAsync(user))
                 {
                     
                     return BadRequest(new { invalid = "You didn`t confirm your email" });
                 }
+                var roles = userManager.GetRolesAsync(user).Result;
 
-                var claims = new[]
+                var claims = new List<Claim>()
                 {
-                    new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-
+                
+                new Claim("id", user.Id),
+                new Claim("name", user.UserName),
                 };
-                var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authnetication"));
 
+                foreach (var role in roles)
+                {
+                    claims.Add(new Claim("roles", role));
+                }
+                var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authnetication"));
+                
                 var token = new JwtSecurityToken(
-                    expires: DateTime.UtcNow.AddHours(1),
                     claims:claims,
-                    issuer: "http://test.com",
-                    audience: "http://test.com",
+
                     signingCredentials:new Microsoft.IdentityModel.Tokens.SigningCredentials(signingKey,SecurityAlgorithms.HmacSha256)
                     
                     );
                 return  Ok(new
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token),
-                    expiration = token.ValidTo
                 });
             }
             return BadRequest(new { invalid = "Email or password is not correct" });

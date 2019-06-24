@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -61,8 +62,6 @@ namespace StudentMaster.Controllers
             var token = new JwtSecurityToken(
                 expires: DateTime.UtcNow.AddHours(1),
                 claims: claims,
-                issuer: "http://test.com",
-                audience: "http://test.com",
                 signingCredentials: new Microsoft.IdentityModel.Tokens.SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
 
                 );
@@ -114,6 +113,15 @@ namespace StudentMaster.Controllers
             _appDbContext.Entry(user).State = EntityState.Modified;
             _appDbContext.SaveChanges();
             return Ok();
+        }
+        [HttpGet]
+        [Authorize]
+        [Route("testrole")]
+        public ActionResult About()
+        {
+            
+
+            return Ok(new { add = "sa" });
         }
 
         [HttpPost]

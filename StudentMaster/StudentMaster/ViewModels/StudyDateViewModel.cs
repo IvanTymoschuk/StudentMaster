@@ -8,8 +8,6 @@ namespace StudentMaster.ViewModels
 {
     public class DateAttribute : RangeAttribute
     {
-   
-
         public DateAttribute(int FromYears,int ToYears)
           : base(typeof(DateTime), DateTime.Now.AddYears(FromYears).ToShortDateString(), DateTime.Now.AddYears(ToYears).ToShortDateString()) { }
     }
