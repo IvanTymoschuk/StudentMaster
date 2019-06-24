@@ -2,7 +2,6 @@
 import { Route } from 'react-router';
 import Layout from './components/Layout';
 import Home from './components/Home';
-import Counter from './components/Counter';
 import LoginPage from './components/Login/LoginPage';
 import RegisterPage from './components/Register/RegisterPage'
 import ForgotPasswordPage from './components/ForgotPasswordPage';
@@ -20,13 +19,12 @@ export default () => (
   
   <Layout>
     <Route exact path='/' component={Home} />
-    <Route path='/counter' component={Counter} />
     <Route path='/login' component={LoginPage} />
     <Route path='/registration' component={RegisterPage} />
     <Route path="/forgotpassword" component={ForgotPasswordPage} />
     <Route path="/resetpassword" component={ResetPasswordPage} />
     <Route path="/confirmemail" component={ConfirmEmail} />
-     <Route path='/admin' component={requireAuth(AdminPage,"admin")} /> 
+    <Route path='/admin' component={requireAuth(AdminPage,"admin")} /> 
 
   </Layout>
 );

@@ -6,7 +6,8 @@ import { register, social_login } from "../../actions/authActions";
 import { Redirect } from 'react-router-dom';
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
-import { Row } from 'react-bootstrap'
+import { Row, Col } from 'react-bootstrap'
+import './RegisterForm.css'
 
 
 
@@ -220,6 +221,8 @@ class RegisterForm extends Component {
 
                 </div>
                 <div>
+                    <Row className="d-flex justify-content-center">
+              
                     <GoogleLogin
                         clientId="465803180827-n8oa659teb415347p0a3b2qoq9ir0gvg.apps.googleusercontent.com"
                         buttonText="Login with google"
@@ -227,12 +230,19 @@ class RegisterForm extends Component {
                         onFailure={responseGoogle}
                         cookiePolicy={'single_host_origin'}
                     />
+                        </Row>
+             
+                        <Row >
+
                     <FacebookLogin
                         appId="355421778452383"
                         autoLoad={true}
                         fields="name,email"
                         // onClick={componentClicked}
                         callback={responseFacebook} />
+             
+
+                        </Row>
                 </div>
 
             </form>

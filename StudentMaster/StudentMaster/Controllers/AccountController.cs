@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -46,17 +47,27 @@ namespace StudentMaster.Controllers
                     FirstName = model.Name
                 };
                 var result = await userManager.CreateAsync(user);
+                await userManager.AddToRoleAsync(user, "user");
                 if (!result.Succeeded)
                 {
                     return BadRequest(new { invalid = "Something went wrong!" });
                 }
             }
-            var claims = new[]
-                {
-                    new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+           
+            var roles = userManager.GetRolesAsync(user).Result;
 
+            var claims = new List<Claim>()
+                {
+
+                new Claim("id", user.Id),
+                new Claim("name", user.UserName),
                 };
+
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim("roles", role));
+            }
+            
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authnetication"));
 
             var token = new JwtSecurityToken(
