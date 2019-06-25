@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using StudentMaster.Models;
 using StudentMaster.ViewModels.AdminViewModels;
+using System;
 
 namespace BackEnd.ViewModels.Mappings
 {
@@ -13,7 +14,7 @@ namespace BackEnd.ViewModels.Mappings
             CreateMap<User, UserViewModel>()
                .ForMember(dest => dest.Age,
                    opts => opts.MapFrom(
-                       src => src.BirthDate
+                       src =>DateTime.Now.Year-src.BirthDate.Year
                    ))
                    .ForMember(dest => dest.Email,
                    opts => opts.MapFrom(
@@ -33,7 +34,7 @@ namespace BackEnd.ViewModels.Mappings
                    ))
                    .ForMember(dest => dest.StudyDate,
                    opts => opts.MapFrom(
-                       src => src.StudyingDate
+                       src => src.StudyDate
                    ))
                    .ForMember(dest => dest.UserId,
                    opts => opts.MapFrom(

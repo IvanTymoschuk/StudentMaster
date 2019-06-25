@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Hangfire;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -44,14 +45,11 @@ namespace StudentMaster
                 options.RequireHttpsMetadata = false;
                 options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidAudience = "http://test.com",
-                    ValidIssuer = "http://test.com",
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authnetication"))
                 };
 
             });
+
             var mappingConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new ViewModelToEntityMappingProfile());
@@ -59,6 +57,11 @@ namespace StudentMaster
 
             IMapper mapper = mappingConfig.CreateMapper();
             services.AddSingleton(mapper);
+
+
+            services.AddHangfire(x => x.UseSqlServerStorage("Server=(localdb)\\mssqllocaldb;Database=StudentMasterdb;Trusted_Connection=True;"));
+            services.AddHangfireServer();
+
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -118,6 +121,8 @@ namespace StudentMaster
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+
+            app.UseHangfireDashboard();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

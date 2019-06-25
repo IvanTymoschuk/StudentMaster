@@ -61,7 +61,7 @@ namespace StudentMaster.Services
                     AllUsers = AllUsers.OrderByDescending(s => s.RegistrationDate);
                     break;
                 case SortState.StudyDateAsc:
-                    AllUsers = AllUsers.OrderBy(s => s.St);
+                    AllUsers = AllUsers.OrderBy(s => s.StudyDate);
                     break;
                 case SortState.StudyDateDesc:
                     AllUsers = AllUsers.OrderByDescending(s => s.StudyDate);
