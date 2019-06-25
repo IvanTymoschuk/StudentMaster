@@ -7,8 +7,11 @@ import RegisterPage from './components/Register/RegisterPage'
 import ForgotPasswordPage from './components/ForgotPasswordPage';
 import ResetPasswordPage from './components/ResetPasswordPage';
 import ConfirmEmail from './components/Confirmation/ConfirmEmailPage';
- import AdminPage from './components/Admin/AdminPage';
- import requireAuth from "./utils/requireAuth";
+import AdminPage from './components/Admin/AdminPage';
+import requireAuth from "./utils/requireAuth";
+import PickDatePage from "./components/Account/PickDatePage"
+import StudyInfo from "./components/Account/StudyInfo"
+
 
 
 
@@ -16,7 +19,7 @@ import ConfirmEmail from './components/Confirmation/ConfirmEmailPage';
 
 
 export default () => (
-  
+
   <Layout>
     <Route exact path='/' component={Home} />
     <Route path='/login' component={LoginPage} />
@@ -24,7 +27,11 @@ export default () => (
     <Route path="/forgotpassword" component={ForgotPasswordPage} />
     <Route path="/resetpassword" component={ResetPasswordPage} />
     <Route path="/confirmemail" component={ConfirmEmail} />
-    <Route path='/admin' component={requireAuth(AdminPage,"admin")} /> 
+    <Route path="/pickdate" component={requireAuth(PickDatePage, "user")} />
+    <Route path="/schedule" component={requireAuth(StudyInfo, "user")} />
+
+
+    <Route path='/admin' component={requireAuth(AdminPage, "admin")} />
 
   </Layout>
 );

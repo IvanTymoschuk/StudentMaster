@@ -13,7 +13,7 @@ export default function (ComposedComponent, roles = '') {
     componentWillMount() {
       console.log(this);
       if (this.state.roles !== '')
-        if (this.props.roles[0] !== this.state.roles)
+        if (this.props.roles !== this.state.roles)
           this.setState({ redirect: true })
       if (!this.props.isAuthenticated) {
         this.setState({ redirect: true })
@@ -22,7 +22,7 @@ export default function (ComposedComponent, roles = '') {
 
     componentWillUpdate(nextProps) {
       if (this.state.roles !== '')
-        if (this.props.roles[0] !== this.state.roles)
+        if (this.props.roles !== this.state.roles)
           this.setState({ redirect: true })
       if (!nextProps.isAuthenticated) {
         this.setState({ redirect: true });

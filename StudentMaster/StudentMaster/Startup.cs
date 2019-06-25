@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Hangfire;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -45,6 +46,10 @@ namespace StudentMaster
                 };
 
             });
+
+            services.AddHangfire(x => x.UseSqlServerStorage("Server=(localdb)\\mssqllocaldb;Database=StudentMasterdb;Trusted_Connection=True;"));
+            services.AddHangfireServer();
+
             services.Configure<IdentityOptions>(options =>
             {
                 // Password settings.
@@ -100,6 +105,8 @@ namespace StudentMaster
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+
+            app.UseHangfireDashboard();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

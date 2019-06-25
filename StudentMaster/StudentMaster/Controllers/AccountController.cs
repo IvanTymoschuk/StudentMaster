@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -112,7 +113,7 @@ namespace StudentMaster.Controllers
         [Route("pickstudydate")]
         public async Task<IActionResult> PickStudyDate([FromBody]StudyDateViewModel model)
         {
-            
+
             if (!ModelState.IsValid)
                 return BadRequest(model);
             var user = await userManager.FindByIdAsync(model.UserId);
@@ -120,19 +121,50 @@ namespace StudentMaster.Controllers
             {
                 return BadRequest(new { invalid = "UserId is not registred in system" });
             }
+
             user.StudyDate = model.StudyDate;
             _appDbContext.Entry(user).State = EntityState.Modified;
             _appDbContext.SaveChanges();
+
+
+            BackgroundJob.Schedule(
+     () => SendNotification(user),
+     user.StudyDate.AddMonths(-1));
+
+
+            BackgroundJob.Schedule(
+     () => SendNotification(user),
+     user.StudyDate.AddDays(-7));
+
+
+            BackgroundJob.Schedule(
+     () => SendNotification(user),
+     user.StudyDate.AddDays(-1).Date + new TimeSpan(7, 0, 0));
+
             return Ok();
         }
-        [HttpGet]
-        [Authorize]
-        [Route("testrole")]
-        public ActionResult About()
-        {
-            
 
-            return Ok(new { add = "sa" });
+        public async Task SendNotification(User user)
+        {
+
+            //var callbackUrl = Url.Action("", "schedule", new { }, protocol: HttpContext.Request.Scheme);
+            EmailService emailService = new EmailService();
+            await emailService.SendEmailAsync(user.Email, "Notification",
+                $"Your studing will start: ");
+        }
+
+        [HttpGet]
+        [Route("studyinfo")]
+        public async Task<IActionResult> StudyInf([FromQuery]string id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return BadRequest(new { invalid = "UserId is not registred in system" });
+            }
+           
+           var  tillEnd = user.StudyDate - DateTime.Now;
+            return Ok(new {studyDate= user.StudyDate, tillEnd = tillEnd.Days } );
         }
 
         [HttpPost]
