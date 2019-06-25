@@ -43,7 +43,7 @@ namespace StudentMaster.Controllers
             };
 
             var result = await userManager.CreateAsync(userIdentity, model.Password);
-
+            await userManager.AddToRoleAsync(userIdentity, "user");
 
             if (!result.Succeeded)
             {

@@ -6,7 +6,8 @@ import { register, social_login } from "../../actions/authActions";
 import { Redirect } from 'react-router-dom';
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
-import { Row } from 'react-bootstrap'
+import { Row, Col } from 'react-bootstrap'
+import './RegisterForm.css'
 
 
 
@@ -23,7 +24,7 @@ class RegisterForm extends Component {
             isLoading: false,
             firstName: '',
             lastName: '',
-            dateOfBirth: ''
+            birthDate: ''
         };
         this.signup = this.signup.bind(this);
     }
@@ -105,11 +106,11 @@ class RegisterForm extends Component {
         const isValid = Object.keys(errors).length === 0
         if (isValid) {
             const { email, password, confirmPassword,
-                firstName, lastName, dateOfBirth } = this.state;
+                firstName, lastName, birthDate } = this.state;
             this.setState({ isLoading: true });
             this.props.register({
                 email, password, confirmPassword,
-                firstName, lastName, dateOfBirth
+                firstName, lastName, birthDate
             })
                 .then(
                     () => this.setState({ done: true }),
@@ -202,16 +203,16 @@ class RegisterForm extends Component {
                         onChange={this.handleChange} />
                     {!!errors.lastName ? <span className="help-block">{errors.lastName}</span> : ''}
                 </div>
-                <div className={classnames('form-group', { 'has-error': !!errors.dateOfBirth })}>
+                <div className={classnames('form-group', { 'has-error': !!errors.birthDate })}>
                     <input type="Date"
                         className="form-control"
-                        id="dateOfBirth"
-                        name="dateOfBirth"
+                        id="birthDate"
+                        name="birthDate"
                         placeholder="Date of Birth"
 
-                        value={this.state.dateOfBirth}
+                        value={this.state.birthDate}
                         onChange={this.handleChange} />
-                    {!!errors.dateOfBirth ? <span className="help-block">{errors.dateOfBirth}</span> : ''}
+                    {!!errors.birthDate ? <span className="help-block">{errors.birthDate}</span> : ''}
                 </div>
                 <div className="form-group">
 
@@ -220,6 +221,8 @@ class RegisterForm extends Component {
 
                 </div>
                 <div>
+                    <Row className="d-flex justify-content-center">
+              
                     <GoogleLogin
                         clientId="465803180827-n8oa659teb415347p0a3b2qoq9ir0gvg.apps.googleusercontent.com"
                         buttonText="Login with google"
@@ -227,12 +230,19 @@ class RegisterForm extends Component {
                         onFailure={responseGoogle}
                         cookiePolicy={'single_host_origin'}
                     />
+                        </Row>
+             
+                        <Row >
+
                     <FacebookLogin
                         appId="355421778452383"
                         autoLoad={true}
                         fields="name,email"
                         // onClick={componentClicked}
                         callback={responseFacebook} />
+             
+
+                        </Row>
                 </div>
 
             </form>
