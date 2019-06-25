@@ -57,7 +57,7 @@ class PickDatePage extends React.Component {
            
             <div className="mycontain">
                
-                <form onSubmit={this.onSubmitForm}>
+                <form className="myform" onSubmit={this.onSubmitForm}>
                 <Panel>
                 <h2 className="header text-center">Pick your study date</h2>
                     <div className={classnames('form-group', { 'has-error': !!errors.StudyDate })}>
