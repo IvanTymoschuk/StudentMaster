@@ -5,8 +5,6 @@ import jwtDecode from 'jwt-decode';
 import { SET_CURRENT_USER } from './types';
 
 export function setCurrentUser(user) {
-    console.log("from action");
-    console.log(user);
     return {
         type: SET_CURRENT_USER,
         user
@@ -21,7 +19,6 @@ export function logout() {
     }
 }
 export function forgotPassword(data) {
-    console.log(data);
     return dispatch => {
         return axios.post('https://localhost:44326/api/Account/forgotpassword', data);
     }

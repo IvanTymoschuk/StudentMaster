@@ -1,3 +1,23 @@
 .socialLog{
     height: 100px !important;
+    
+}
+.my-facebook-button-class{
+    background-color:  rgb(21, 85, 223);
+    color: aliceblue;
+    border:none;
+    font-size: 15px;
+    margin-top: 10px;
+    
+}
+.date{
+    display: inline-block;
+width: 100%;
+
+
+}
+.react-date-picker__wrapper{
+    border-radius: 4px !important;
+    border: 1px solid #ccc !important;
+
 }

@@ -1,18 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using Hangfire;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using StudentMaster.Data;
-using StudentMaster.Models;
 using StudentMaster.Services;
 using StudentMaster.ViewModels;
 
@@ -22,13 +9,9 @@ namespace StudentMaster.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private UserManager<User> userManager;
-        private readonly ApplicationDbContext _appDbContext;
         private readonly AccountService accountService;
-        public AccountController(UserManager<User> userManager, ApplicationDbContext appDbContext, AccountService accountService)
+        public AccountController(AccountService accountService)
         {
-            this._appDbContext = appDbContext;
-            this.userManager = userManager;
             this.accountService = accountService;
         }
 

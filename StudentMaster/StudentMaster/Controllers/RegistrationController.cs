@@ -17,11 +17,11 @@ namespace StudentMaster.Controllers
     public class RegistrationController : ControllerBase
     {
 
-        private readonly UserManager<User> userManager;
+        private readonly AccountService accountService;
 
-        public RegistrationController(UserManager<User> userManager)
+        public RegistrationController(AccountService accountService)
         {
-            this.userManager = userManager;
+            this.accountService = accountService;
            
         }
      
@@ -33,35 +33,8 @@ namespace StudentMaster.Controllers
                 return BadRequest(ModelState);
             }
 
-            var userIdentity = new User() {
-                UserName = model.Email,
-                BirthDate = model.BirthDate,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Email = model.Email,
-                RegistrationDate = DateTime.Now     
-            };
-
-            var result = await userManager.CreateAsync(userIdentity, model.Password);
-            await userManager.AddToRoleAsync(userIdentity, "user");
-
-            if (!result.Succeeded)
-            {
-               
-                    return  BadRequest(new { invalid =  "Account with this email has already registred" });
-                
-            }
-            var code = await userManager.GenerateEmailConfirmationTokenAsync(userIdentity);
-            var callbackUrl = Url.Action(
-
-                "ConfirmEmail",
-                "Registration",
-                new { userId = userIdentity.Id, code = code , username = userIdentity.FirstName},
-
-                protocol: HttpContext.Request.Scheme);
-            EmailService emailService = new EmailService();
-            await emailService.SendEmailAsync(model.Email, "Confirm your account",
-                $"Confirm registration, follow : <a href='{callbackUrl}'>link</a>");
+           if(!await accountService.CreateUser(model))
+                return BadRequest(new { invalid = "Account with this email has already registred" });
 
             return Ok();
 
@@ -77,13 +50,9 @@ namespace StudentMaster.Controllers
             {
                 return BadRequest("Error");
             }
-            var user = await userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
+            if (await accountService.FindByUserId(userId) == null)
                 return BadRequest("Error");
-            }
-            var result = await userManager.ConfirmEmailAsync(user, code);
-            if (result.Succeeded)
+            if(await accountService.ConfirmEmail(await accountService.FindByUserId(userId), code))
                 return RedirectToAction("Index", "Home");
             else
                 return BadRequest("Error");

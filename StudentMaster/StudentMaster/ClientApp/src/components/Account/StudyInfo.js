@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes, { number } from 'prop-types';
 import { connect } from "react-redux";
 import { studyInfo } from "../../actions/accActions";
+import Moment from 'react-moment';
 
 class StudyInfo extends React.Component {
     constructor(props) {
@@ -25,8 +26,8 @@ componentWillMount(){
 render() {
     const { studyDate,tillEnd} = this.state;
     return (<div>
-        <h1 className="header">Till start of studying left: {tillEnd}</h1>
-        <h5 className="header">Date: {studyDate}</h5></div>);
+        <h1 className="header">Till start of your studying left: {tillEnd}</h1>
+        <h4 className="header">Date: <Moment format="YYYY/MM/DD">{studyDate}</Moment></h4></div>);
 }
 }
     StudyInfo.propTypes =

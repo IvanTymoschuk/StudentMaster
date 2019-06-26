@@ -11,7 +11,6 @@ export default function (ComposedComponent, roles = '') {
       roles: roles
     };
     componentWillMount() {
-      console.log(this);
       if (this.state.roles !== '')
         if (this.props.roles !== this.state.roles)
           this.setState({ redirect: true })

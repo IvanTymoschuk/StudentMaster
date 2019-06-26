@@ -50,6 +50,29 @@ namespace StudentMaster.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        public async Task<bool> IsEmailConfirmed(string Email)
+        {
+            var user = await userManager.FindByNameAsync(Email);
+            if (!await userManager.IsEmailConfirmedAsync(user))
+            {
+
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<string> GetTokenLogin(LoginViewModel model)
+        {
+
+            var user = await userManager.FindByNameAsync(model.Email);
+            if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
+            {
+                JwtSecurityToken token = GenerateToken(user);
+                return new JwtSecurityTokenHandler().WriteToken(token);
+            }
+            return null;       
+        }
+
         public async Task<StudyInfoViewModel> GetStudyInfo(string id)
         {
             StudyInfoViewModel model = new StudyInfoViewModel();
@@ -71,6 +94,41 @@ namespace StudentMaster.Services
             }
             var result = await userManager.ResetPasswordAsync(user, model.Code, model.Password);
             return result;
+        }
+
+        public async Task<bool> CreateUser (RegistrationViewModel model)
+        {
+            var userIdentity = new User()
+            {
+                UserName = model.Email,
+                BirthDate = model.BirthDate,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Email = model.Email,
+                RegistrationDate = DateTime.Now
+            };
+
+            var result = await userManager.CreateAsync(userIdentity, model.Password);
+            await userManager.AddToRoleAsync(userIdentity, "user");
+
+            if (!result.Succeeded)
+            {
+
+                return false;
+
+            }
+            var code = await userManager.GenerateEmailConfirmationTokenAsync(userIdentity);
+            //var callbackUrl = Url.Action(
+
+            //    "ConfirmEmail",
+            //    "Registration",
+            //    new { userId = userIdentity.Id, code = code, username = userIdentity.FirstName },
+
+            //    protocol: HttpContext.Request.Scheme);
+            //EmailService emailService = new EmailService();
+            //await emailService.SendEmailAsync(model.Email, "Confirm your account",
+            //    $"Confirm registration, follow : <a href='{callbackUrl}'>link</a>");
+            return true;
         }
 
         public async Task<bool> ForgotPassword(ForgotPasswordViewModel model)
@@ -111,6 +169,21 @@ namespace StudentMaster.Services
                     BackgroundJob.Schedule(
              () => SendNotification(user),
              user.StudyDate.AddDays(-1).Date + new TimeSpan(7, 0, 0));
+        }
+        public async Task<bool> ConfirmEmail(User user, string code)
+        {
+            var result = await userManager.ConfirmEmailAsync(user, code);
+            if (result.Succeeded)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<User> FindByUserId(string UserId)
+        {
+            var user = await userManager.FindByIdAsync(UserId);
+            return user;
         }
         public async Task SendNotification(User user)
         {
