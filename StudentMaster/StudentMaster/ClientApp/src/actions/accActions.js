@@ -9,12 +9,10 @@ export function pickDate(data) {
 
 export function getUsers(search = null,selectedsort = null) {
     let optionalUrl = '';
-    console.log(search);
     if (search!=null && search !== '')
     {
         optionalUrl += '&name=' + search;
     }
-    console.log(selectedsort);
 
     if (selectedsort!=null)
     {

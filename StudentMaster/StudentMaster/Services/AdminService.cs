@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using StudentMaster.Data;
 using StudentMaster.Models;
 using StudentMaster.ViewModels;
 using StudentMaster.ViewModels.AdminViewModels;
@@ -13,13 +14,37 @@ namespace StudentMaster.Services
 {
     public class AdminService
     {
+        private readonly ApplicationDbContext applicationDbContext;
         private readonly UserManager<User> userManager;
         private readonly IMapper mapper;
-        public AdminService(UserManager<User> userManager, IMapper mapper)
+
+        public AdminService(ApplicationDbContext applicationDbContext, UserManager<User> userManager, IMapper mapper)
         {
             this.mapper = mapper;
             this.userManager = userManager;
+            this.applicationDbContext = applicationDbContext;
         }
+        public async Task<bool> EditUser(EditUserViewModel model)
+        {
+            var user = await userManager.FindByIdAsync(model.UserId);
+            if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
+            {
+                return false;
+            }
+
+            user.BirthDate = model.BirthDate;
+            user.Email = model.Email;
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.BirthDate = model.BirthDate;
+
+            await userManager.UpdateAsync(user);
+            
+            applicationDbContext.SaveChanges();
+
+            return true;
+        }
+
         public async Task<UserListViewModel> GetUsers(string name, int page = 1,
            SortState sortOrder = SortState.FirstNameAsc)
         {
@@ -49,10 +74,10 @@ namespace StudentMaster.Services
                     AllUsers = AllUsers.OrderByDescending(s => s.LastName);
                     break;
                 case SortState.AgeAsc:
-                    AllUsers = AllUsers.OrderBy(s => s.BirthDate);
+                    AllUsers = AllUsers.OrderByDescending(s => s.BirthDate);
                     break;
                 case SortState.AgeDesc:
-                    AllUsers = AllUsers.OrderByDescending(s => s.BirthDate);
+                    AllUsers = AllUsers.OrderBy(s => s.BirthDate);
                     break;
                 case SortState.RegistredDateAsc:
                     AllUsers = AllUsers.OrderBy(s => s.RegistrationDate);

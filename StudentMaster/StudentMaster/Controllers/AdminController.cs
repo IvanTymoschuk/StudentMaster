@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,19 @@ namespace StudentMaster.Controllers
         {
             this.adminService = adminService;
         }
+
+        [HttpPost]
+        [Route("edituser")]
+        public async Task<IActionResult> EditUser(EditUserViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (!!await adminService.EditUser(model))
+                return BadRequest();
+            return Ok();
+        } 
 
         [HttpGet]
         [Route("all")]
