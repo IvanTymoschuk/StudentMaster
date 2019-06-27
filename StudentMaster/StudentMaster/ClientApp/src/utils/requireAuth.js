@@ -1,7 +1,11 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import {
+  connect
+} from 'react-redux';
 import PropTypes from 'prop-types';
-import { Redirect } from "react-router";
+import {
+  Redirect
+} from "react-router";
 
 export default function (ComposedComponent, roles = '') {
   class Authenticate extends React.Component {
@@ -13,26 +17,39 @@ export default function (ComposedComponent, roles = '') {
     componentWillMount() {
       if (this.state.roles !== '')
         if (this.props.roles !== this.state.roles)
-          this.setState({ redirect: true })
+          this.setState({
+            redirect: true
+          })
       if (!this.props.isAuthenticated) {
-        this.setState({ redirect: true })
+        this.setState({
+          redirect: true
+        })
       }
     }
 
     componentWillUpdate(nextProps) {
       if (this.state.roles !== '')
         if (this.props.roles !== this.state.roles)
-          this.setState({ redirect: true })
+          this.setState({
+            redirect: true
+          })
       if (!nextProps.isAuthenticated) {
-        this.setState({ redirect: true });
+        this.setState({
+          redirect: true
+        });
       }
     }
 
     render() {
       return (
-        this.state.redirect ? 
-          <Redirect to="/login" /> :
-          <ComposedComponent {...this.props} />
+        this.state.redirect ?
+        <
+        Redirect to = "/login" / > :
+        <
+        ComposedComponent {
+          ...this.props
+        }
+        />
       );
     }
   }

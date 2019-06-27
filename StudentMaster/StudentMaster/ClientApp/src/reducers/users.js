@@ -1,7 +1,8 @@
-import { recieveUsersData } from "../actions/types";
+import { recieveUsersData, getAllPages } from "../actions/types";
 
 const initialState = {
-  users: []
+  users: [],
+  pages: 0
 };
 
 export default (state = initialState, action = {}) => {
@@ -12,5 +13,12 @@ export default (state = initialState, action = {}) => {
       users: action.users
     };
   }
+
+if (action.type === getAllPages) {
+  return {
+    ...state,
+    pages: action.pages
+    }
+  };
   return state;
 }

@@ -48,7 +48,7 @@ namespace StudentMaster.Services
         public async Task<UserListViewModel> GetUsers(string name, int page = 1,
            SortState sortOrder = SortState.FirstNameAsc)
         {
-            int pageSize = 9;
+            int pageSize = 5;
 
             IQueryable<User> AllUsers = userManager.Users;
 

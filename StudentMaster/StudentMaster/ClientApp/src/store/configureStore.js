@@ -7,7 +7,7 @@ import users from "../reducers/users";
 export default function configureStore(history, initialState) {
   const reducers = {
     auth,
-    users: users,
+    users: users
   };
   const middleware = [thunk, routerMiddleware(history)];
 

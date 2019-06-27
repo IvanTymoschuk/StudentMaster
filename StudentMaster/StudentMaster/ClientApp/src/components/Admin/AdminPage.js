@@ -1,20 +1,61 @@
-import React, { Component } from 'react';
-import { getUsers } from "../../actions/accActions";
+import React, {
+    Component
+} from 'react';
+import {
+    getUsers
+} from "../../actions/accActions";
 import PropTypes from 'prop-types';
-import { connect } from "react-redux";
+import {
+    connect
+} from "react-redux";
 import Select from 'react-select';
 import Moment from 'react-moment';
-const sorting = [
-    { label: "First Name Up", value: 0 },
-    { label: "First Name Down", value: 1 },
-    { label: "Last Name Up", value: 2 },
-    { label: "Last Name Down", value: 3 },
-    { label: "Age Up", value: 4 },
-    { label: "Age Down", value: 5 },
-    { label: "Registred Date Up", value: 6 },
-    { label: "Registred Date Down", value: 7 },
-    { label: "Study Date Up", value: 8 },
-    { label: "Study Date Down", value: 9 },
+import {
+    Pagination,
+    Row,
+    Col
+} from "react-bootstrap";
+import "./AdminPage.css"
+const sorting = [{
+        label: "First Name Up",
+        value: 0
+    },
+    {
+        label: "First Name Down",
+        value: 1
+    },
+    {
+        label: "Last Name Up",
+        value: 2
+    },
+    {
+        label: "Last Name Down",
+        value: 3
+    },
+    {
+        label: "Age Up",
+        value: 4
+    },
+    {
+        label: "Age Down",
+        value: 5
+    },
+    {
+        label: "Registred Date Up",
+        value: 6
+    },
+    {
+        label: "Registred Date Down",
+        value: 7
+    },
+    {
+        label: "Study Date Up",
+        value: 8
+    },
+    {
+        label: "Study Date Down",
+        value: 9
+    },
 ];
 
 class AdminPage extends Component {
@@ -23,7 +64,9 @@ class AdminPage extends Component {
         this.state = {
             search: '',
             selectedsort: sorting[0],
-            sortasc: true
+            sortasc: true,
+            currentPage: 1
+
 
         }
         this.handleChange = this.handleChange.bind(this);
@@ -32,14 +75,18 @@ class AdminPage extends Component {
     componentWillMount() {
 
         this.props.getUsers();
+        console.log("===")
+        console.log(this.props.pages);
     }
     componentDidMount() {
 
     }
     handleChange = (e) => {
-        this.setState(
-            { search: e.target.value }, () =>
-                this.props.getUsers(this.state.search, this.stateselectedsort)
+        this.setState({
+                currentPage: 1,
+                search: e.target.value
+            }, () =>
+            this.props.getUsers(this.state.currentPage, this.state.search, this.stateselectedsort)
         )
 
     }
@@ -49,39 +96,53 @@ class AdminPage extends Component {
     handleSort(column) {
         if (this.state.selectedsort.value == column)
             column++;
-            
-        this.setState(
-            { selectedsort:  sorting[column]}, () =>
-            this.props.getUsers(this.state.search, this.state.selectedsort.value))
+
+        this.setState({
+                selectedsort: sorting[column]
+            }, () =>
+            this.props.getUsers(this.state.currentPage, this.state.search, this.state.selectedsort.value))
 
     }
     selectChanged = (e) => {
-        this.setState(
-            { selectedsort: sorting[e.value] }, () =>
+        this.setState({
+                selectedsort: sorting[e.value]
+            }, () =>
 
-                this.props.getUsers(this.state.search, this.state.selectedsort.value)
+            this.props.getUsers(this.state.currentPage, this.state.search, this.state.selectedsort.value)
         )
+    }
+    handlePageChange(pageNumber) {
+        console.log("active page is");
+        this.setState({
+                currentPage: pageNumber
+            }, () =>
+            this.props.getUsers(this.state.currentPage, this.state.search, this.state.selectedsort.value)
+        );
     }
     render() {
 
         return (
             <div>
+                <div className="row align-items-center">
+                <Col md={6}><div className="input-group input-group-lg">
 
-                <div className="input-group input-group-lg">
+<input placeholder="Search" value={this.state.search} type="text" className="search form-control" onChange={this.handleChange} aria-label="Sizing example input" aria-Downribedby="inputGroup-sizing-lg" />
+<span class="input-group-btn ">
 
-                    <input placeholder="Search" value={this.state.search} type="text" className="form-control" onChange={this.handleChange} aria-label="Sizing example input" aria-Downribedby="inputGroup-sizing-lg" />
-                    <span class="input-group-btn ">
-
-                    </span>
+</span>
 
 
-                </div>
-                <Select 
-                    options={sorting} 
-                    value={this.state.selectedsort} 
+</div></Col>
+                <Col md={6}><Select
+                    options={sorting}
+                    value={this.state.selectedsort}
                     isClearable={true}
-                    defaultValue={0} 
+                    defaultValue={0}
                     onChange={this.selectChanged} />
+                    
+                    </Col>
+                
+                </div>
                 <table className="table table-hover">
                     <thead className="thead-dark">
                         <tr>
@@ -110,21 +171,34 @@ class AdminPage extends Component {
                         )}
                     </tbody>
                 </table>
+                <Pagination
+                className="users-pagination pull-right"
+                bsSize="large"
+                    maxButtons={this.props.pages}
+                    first last next prev
+                    items={this.props.pages}
+                    onSelect={this.handlePageChange.bind(this)}
+                    activePage={this.state.currentPage}
+                ></Pagination>
             </div>
 
         )
     }
 }
 
-AdminPage.propTypes =
-    {
-        getUsers: PropTypes.func.isRequired,
+AdminPage.propTypes = {
+    getUsers: PropTypes.func.isRequired,
 
-    }
+
+}
 const mapStateToProps = (state) => {
     return {
-        users: state.users.users
+        users: state.users.users,
+        pages: state.users.pages
+
     };
 }
 
-export default connect(mapStateToProps, { getUsers })(AdminPage);
+export default connect(mapStateToProps, {
+    getUsers
+})(AdminPage);
