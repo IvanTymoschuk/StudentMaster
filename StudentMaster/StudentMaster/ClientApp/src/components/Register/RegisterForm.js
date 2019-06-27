@@ -1,12 +1,19 @@
-import React, { Component } from 'react';
+import React, {
+    Component
+} from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { connect } from "react-redux";
-import { register, social_login } from "../../actions/authActions";
-import { Redirect } from 'react-router-dom';
-import GoogleLogin from 'react-google-login';
+import {
+    connect
+} from "react-redux";
+import {
+    register,
+    social_login
+} from "../../actions/authActions";
+import {
+    Redirect
+} from 'react-router-dom';
 import FacebookLogin from 'react-facebook-login';
-import { Row, Col } from 'react-bootstrap'
 import './RegisterForm.css'
 import DatePicker from 'react-date-picker';
 
@@ -18,8 +25,7 @@ class RegisterForm extends Component {
             email: '',
             password: '',
             confirmPassword: '',
-            errors: {
-            },
+            errors: {},
             done: false,
             isLoading: false,
             firstName: '',
@@ -35,37 +41,33 @@ class RegisterForm extends Component {
         if (!!this.state.errors[name]) {
             let errors = Object.assign({}, this.state.errors);
             delete errors[name];
-            this.setState(
-                {
-                    [name]: value,
-                    errors
-                }
-            )
-        }
-        else {
-            this.setState(
-                { [name]: value })
+            this.setState({
+                [name]: value,
+                errors
+            })
+        } else {
+            this.setState({
+                [name]: value
+            })
         }
     }
     handleDateChange = (e) => {
         if (!!this.state.errors.birthDate) {
             let errors = Object.assign({}, this.state.errors);
             delete errors.birthDate;
-            this.setState(
-                {
-                    birthDate: e,
-                    errors
-                }
-            )
-        }
-        else {
-            this.setState(
-                { birthDate: e })
+            this.setState({
+                birthDate: e,
+                errors
+            })
+        } else {
+            this.setState({
+                birthDate: e
+            })
         }
     }
     handleChange = (e) => {
 
-            this.setStateByErrors(e.target.name, e.target.value);
+        this.setStateByErrors(e.target.name, e.target.value);
     }
     isValidPassword(email) {
 
@@ -78,13 +80,20 @@ class RegisterForm extends Component {
     signup(res, type) {
         if (type === 'facebook') {
             this.props.social_login({
-                name: res.name,
-                email: res.email
-            })
-                .then(() => { this.setState({ done: true }); this.context.router.history.push('/') },
+                    name: res.name,
+                    email: res.email
+                })
+                .then(() => {
+                        this.setState({
+                            done: true
+                        });
+               
+                    },
 
                     (err) => {
-                        this.setState({ errors: err.response.data, isLoading: false });
+                        this.setState({
+                            isLoading: false
+                        });
                     }
                 );
         };
@@ -108,41 +117,53 @@ class RegisterForm extends Component {
 
         const isValid = Object.keys(errors).length === 0
         if (isValid) {
-            const { email, password, confirmPassword,
-                firstName, lastName, birthDate } = this.state;
-            this.setState({ isLoading: true });
+            const {
+                email,
+                password,
+                confirmPassword,
+                firstName,
+                lastName,
+                birthDate
+            } = this.state;
+            this.setState({
+                isLoading: true
+            });
             this.props.register({
-                email, password, confirmPassword,
-                firstName, lastName, birthDate
-            })
+                    email,
+                    password,
+                    confirmPassword,
+                    firstName,
+                    lastName,
+                    birthDate
+                })
                 .then(
-                    () => this.setState({ done: true }),
+                    () => this.setState({
+                        done: true
+                    }),
 
                     (err) => {
-                        this.setState({ errors: err.response.data, isLoading: false });
+                        this.setState({
+                            errors: err.response.data,
+                            isLoading: false
+                        });
                     }
                 );
-        }
-        
-        else {
-            this.setState({ errors });
+        } else {
+            this.setState({
+                errors
+            });
         }
 
 
     }
     render() {
         const { errors, isLoading } = this.state;
-        const responseGoogle = (response) => {
-            console.log("google");
-
-            console.log(response);
-            this.signup(response, 'google');
-        }
-        const responseFacebook = (response) => {
+        const clickFacebook = (response) => {
             console.log(response);
             this.signup(response, 'facebook');
         }
         const form = (
+            <div>
             <form onSubmit={this.onSubmitForm}>
                 <h2 className="header text-center">Registration</h2>
                 {
@@ -220,32 +241,38 @@ class RegisterForm extends Component {
 
 
                     <button type="submit" className="btn btn-info btn-block" disabled={isLoading}>Register</button>
-                    <FacebookLogin
-                        appId="355421778452383"
-                        autoLoad={true}
-                        fields="name,email"
-                        cssClass="my-facebook-button-class"
-                        icon="fa-facebook"
-                        // onClick={componentClicked}
-                        callback={responseFacebook} />
+                    
 
                 </div>
 
 
             </form>
+            <FacebookLogin
+            appId="355421778452383"
+            autoLoad={false}
+            cookie={false}
+            xfbml={false}
+            fields="name,email"
+            cssClass="my-facebook-button-class"
+            icon="fa-facebook"
+            
+            callback={clickFacebook}/>
+            </div>
         );
         return (
             this.state.done ?
-                <Redirect to="/" /> : form
+                <Redirect to="/confirmemail" /> : form
         );
     }
 }
 
-RegisterForm.propTypes =
-    {
-        register: PropTypes.func.isRequired,
-        social_login: PropTypes.func.isRequired
+RegisterForm.propTypes = {
+    register: PropTypes.func.isRequired,
+    social_login: PropTypes.func.isRequired
 
-    }
+}
 
-export default connect(null, { register, social_login })(RegisterForm);
+export default connect(null, {
+    register,
+    social_login
+})(RegisterForm);

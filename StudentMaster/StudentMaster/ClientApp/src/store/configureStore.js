@@ -1,6 +1,14 @@
-﻿import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
+﻿import {
+  applyMiddleware,
+  combineReducers,
+  compose,
+  createStore
+} from 'redux';
 import thunk from 'redux-thunk';
-import { routerReducer, routerMiddleware } from 'react-router-redux';
+import {
+  routerReducer,
+  routerMiddleware
+} from 'react-router-redux';
 import auth from "../reducers/auth";
 import users from "../reducers/users";
 
@@ -11,7 +19,6 @@ export default function configureStore(history, initialState) {
   };
   const middleware = [thunk, routerMiddleware(history)];
 
-  // In development, use the browser's Redux dev tools extension if installed
   const enhancers = [];
   const isDevelopment = process.env.NODE_ENV === "development";
   if (

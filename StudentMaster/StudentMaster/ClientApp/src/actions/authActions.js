@@ -1,8 +1,9 @@
 import axios from 'axios';
 import setAuthorizationToken from '../utils/setAuthorizationToken';
-import jwt from 'jsonwebtoken';
 import jwtDecode from 'jwt-decode';
-import { SET_CURRENT_USER } from './types';
+import {
+    SET_CURRENT_USER
+} from './types';
 
 export function setCurrentUser(user) {
     return {
@@ -14,6 +15,7 @@ export function setCurrentUser(user) {
 export function logout() {
     return dispatch => {
         localStorage.removeItem('jwtToken');
+        document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
         setAuthorizationToken(false);
         dispatch(setCurrentUser({}));
     }
@@ -32,9 +34,7 @@ export function resetPassword(data) {
 export function register(data) {
 
     return dispatch => {
-        return axios.post('https://localhost:44326/api/Registration/registration', data).then(res => {
-            this.props.history.push('/confirmemail');
-        });
+        return axios.post('https://localhost:44326/api/Registration/registration', data);
 
     }
 }

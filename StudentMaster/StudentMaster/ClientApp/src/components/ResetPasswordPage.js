@@ -1,22 +1,33 @@
-import React, { Component } from 'react';
-import { Col, Row, Panel } from 'react-bootstrap';
+import React, {
+    Component
+} from 'react';
+import {
+    Col,
+    Row,
+    Panel
+} from 'react-bootstrap';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { connect } from "react-redux";
-import { resetPassword } from "../actions/authActions";
-import { Redirect } from 'react-router-dom';
+import {
+    connect
+} from "react-redux";
+import {
+    resetPassword
+} from "../actions/authActions";
+import {
+    Redirect
+} from 'react-router-dom';
 import queryString from 'query-string'
 
 
 
 class ResestPasswordPage extends Component {
     state = {
-        password:'',
-        confirmPassword:'',
-        userId:'',
-        code:'',
-        errors: {
-        },
+        password: '',
+        confirmPassword: '',
+        email: '',
+        code: '',
+        errors: {},
         done: false,
         isLoading: false,
         serverAnswer: ''
@@ -26,23 +37,23 @@ class ResestPasswordPage extends Component {
         if (!!this.state.errors[name]) {
             let errors = Object.assign({}, this.state.errors);
             delete errors[name];
-            this.setState(
-                {
-                    [name]: value,
-                    errors
-                }
-            )
-        }
-        else {
-            this.setState(
-                { [name]: value })
+            this.setState({
+                [name]: value,
+                errors
+            })
+        } else {
+            this.setState({
+                [name]: value
+            })
         }
     }
 
-    componentWillMount()
-    {      
+    componentWillMount() {
         const values = queryString.parse(this.props.location.search);
-        this.setState({userId:values.userId,code:values.code});
+        this.setState({
+            email: values.email,
+            code: values.code
+        });
     }
 
     handleChange = (e) => {
@@ -63,20 +74,38 @@ class ResestPasswordPage extends Component {
 
         const isValid = Object.keys(errors).length === 0
         if (isValid) {
-            const { code,userId,password,confirmPassword } = this.state;
+            const {
+                code,
+                email,
+                password,
+                confirmPassword
+            } = this.state;
 
-            this.setState({ isLoading: true });
+            this.setState({
+                isLoading: true
+            });
 
-            this.props.resetPassword({userId,code,password,confirmPassword})
+            this.props.resetPassword({
+                    email,
+                    code,
+                    password,
+                    confirmPassword
+                })
                 .then(
-                    () => this.setState({ done: true}),
+                    () => this.setState({
+                        done: true
+                    }),
                     (err) => {
-                        this.setState({ errors: err.response.data, isLoading: false });
+                        this.setState({
+                            errors: err.response.data,
+                            isLoading: false
+                        });
                     }
                 );
-        }
-        else {
-            this.setState({ errors });
+        } else {
+            this.setState({
+                errors
+            });
         }
     }
     render() {

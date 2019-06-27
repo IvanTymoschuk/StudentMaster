@@ -49,7 +49,25 @@ namespace StudentMaster.Services
             JwtSecurityToken token = GenerateToken(user);
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+        public async Task<EditUserViewModel> GetUserData(string userid)
+        {
 
+            var user = await FindByUserId(userid);
+            if (user == null)
+                return null;
+            
+
+            EditUserViewModel model = new EditUserViewModel()
+            {
+                UserId = user.Id,
+                BirthDate = user.BirthDate,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email
+
+            };
+            return  model;
+        }
         public async Task<bool> IsEmailConfirmed(string Email)
         {
             var user = await userManager.FindByNameAsync(Email);
@@ -86,8 +104,9 @@ namespace StudentMaster.Services
             return model;
         }
 
-        public async Task<IdentityResult> ResetPassword (ResetPasswordViewModel model) {
-            var user = await userManager.FindByIdAsync(model.UserId);
+        public async Task<IdentityResult> ResetPassword (ResetPasswordViewModel model)
+        {
+            var user = await userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
                 return null;
@@ -96,7 +115,7 @@ namespace StudentMaster.Services
             return result;
         }
 
-        public async Task<bool> CreateUser (RegistrationViewModel model)
+        public async Task<string> CreateUser (RegistrationViewModel model)
         {
             var userIdentity = new User()
             {
@@ -114,44 +133,31 @@ namespace StudentMaster.Services
             if (!result.Succeeded)
             {
 
-                return false;
+                return null;
 
             }
             var code = await userManager.GenerateEmailConfirmationTokenAsync(userIdentity);
-            //var callbackUrl = Url.Action(
-
-            //    "ConfirmEmail",
-            //    "Registration",
-            //    new { userId = userIdentity.Id, code = code, username = userIdentity.FirstName },
-
-            //    protocol: HttpContext.Request.Scheme);
-            //EmailService emailService = new EmailService();
-            //await emailService.SendEmailAsync(model.Email, "Confirm your account",
-            //    $"Confirm registration, follow : <a href='{callbackUrl}'>link</a>");
-            return true;
+            return code;
         }
 
-        public async Task<bool> ForgotPassword(ForgotPasswordViewModel model)
+        public async Task<string> ForgotPassword(ForgotPasswordViewModel model)
         {
             var user = await userManager.FindByNameAsync(model.Email);
             if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
             {
-                return false;
+                return null;
             }
 
             var code = await userManager.GeneratePasswordResetTokenAsync(user);
-            //var callbackUrl = Url.Action("", "resetpassword", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-            //EmailService emailService = new EmailService();
-            //await emailService.SendEmailAsync(model.Email, "Reset Password",
-            //    $"For reset password - follow: <a href='{callbackUrl}'>link</a>");
-            return true;
+           
+            return code;
         }
         public async Task PickStudyDate(StudyDateViewModel model)
         {
 
             var user = await userManager.FindByIdAsync(model.UserId);
 
-            user.StudyDate = model.StudyDate;
+            user.StudyDate = model.StudyDate.AddDays(1);
             appDbContext.Entry(user).State = EntityState.Modified;
             appDbContext.SaveChanges();
 
@@ -183,15 +189,23 @@ namespace StudentMaster.Services
         public async Task<User> FindByUserId(string UserId)
         {
             var user = await userManager.FindByIdAsync(UserId);
+            if (user == null)
+                return null;
+            return user;
+        }
+
+        public async Task<User> FindByUserEmail(string UserId)
+        {
+            var user = await userManager.FindByEmailAsync(UserId);
             return user;
         }
         public async Task SendNotification(User user)
         {
 
-            //var callbackUrl = Url.Action("", "schedule", new { }, protocol: HttpContext.Request.Scheme);
+          
             EmailService emailService = new EmailService();
             await emailService.SendEmailAsync(user.Email, "Notification",
-                $"Your studing will start: ");
+                $"Your studing will start in: "+ (user.StudyDate - DateTime.Now).Days +" days");
         }
         private JwtSecurityToken GenerateToken(User user)
         {

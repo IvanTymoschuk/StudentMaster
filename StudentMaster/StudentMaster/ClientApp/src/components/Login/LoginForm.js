@@ -1,7 +1,13 @@
-import React, { Component } from 'react';
+import React, {
+    Component
+} from 'react';
 import PropTypes from 'prop-types';
-import { login } from '../../actions/authActions';
-import { connect } from 'react-redux';
+import {
+    login
+} from '../../actions/authActions';
+import {
+    connect
+} from 'react-redux';
 import classnames from 'classnames';
 
 
@@ -29,23 +35,20 @@ class LoginForm extends Component {
         if (!!this.state.errors[name]) {
             let errors = Object.assign({}, this.state.errors);
             delete errors[name];
-            this.setState(
-                {
-                    [name]: value,
-                    errors
-                }
-            )
-        }
-        else {
-            this.setState(
-                { [name]: value })
+            this.setState({
+                [name]: value,
+                errors
+            })
+        } else {
+            this.setState({
+                [name]: value
+            })
         }
     }
     state = {
         email: '',
         password: '',
-        errors: {
-        },
+        errors: {},
         done: false,
         isLoading: false
     }
@@ -67,16 +70,29 @@ class LoginForm extends Component {
 
         const isValid = Object.keys(errors).length === 0
         if (isValid) {
-            const { email, password } = this.state;
-            this.setState({ isLoading: true });
+            const {
+                email,
+                password
+            } = this.state;
+            this.setState({
+                isLoading: true
+            });
             this.props.login(this.state).then(
 
-                () =>{ this.setState({ done: true }),
-                    this.context.router.history.push('/');},
-            (err) => this.setState({ errors: err.response.data, isLoading: false }))
-        }
-        else {
-            this.setState({ errors });
+                () => {
+                    this.setState({
+                            done: true
+                        }),
+                        this.context.router.history.push('/');
+                },
+                (err) => this.setState({
+                    errors: err.response.data,
+                    isLoading: false
+                }))
+        } else {
+            this.setState({
+                errors
+            });
         }
     }
     render() {
@@ -139,4 +155,6 @@ LoginForm.contextTypes = {
 }
 
 
-export default connect(null, { login })(LoginForm);
+export default connect(null, {
+    login
+})(LoginForm);
