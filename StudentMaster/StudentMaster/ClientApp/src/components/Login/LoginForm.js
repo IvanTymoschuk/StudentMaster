@@ -70,10 +70,6 @@ class LoginForm extends Component {
 
         const isValid = Object.keys(errors).length === 0
         if (isValid) {
-            const {
-                email,
-                password
-            } = this.state;
             this.setState({
                 isLoading: true
             });
@@ -82,7 +78,7 @@ class LoginForm extends Component {
                 () => {
                     this.setState({
                             done: true
-                        }),
+                        })
                         this.context.router.history.push('/');
                 },
                 (err) => this.setState({
@@ -97,7 +93,7 @@ class LoginForm extends Component {
     }
     render() {
 
-        const { errors, isLoading } = this.state;
+        const { errors } = this.state;
         return (
             <form onSubmit={this.onSubmit}>
                 <div className="text-center mb-4">

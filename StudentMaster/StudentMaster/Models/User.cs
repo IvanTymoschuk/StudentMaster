@@ -12,7 +12,6 @@ namespace StudentMaster.Models
         public string LastName { get; set; }
         public DateTime RegistrationDate { get; set; }
         public DateTime StudyDate { get; set; }
-
         public DateTime BirthDate { get; set; }
 
 

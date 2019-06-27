@@ -41,3 +41,8 @@ export function studyInfo(data) {
         return axios.get('https://localhost:44326/api/Account/studyinfo?id=' + data.id);
     }
 };
+export function getUserById(id) {
+    return dispatch => {
+        return axios.get('https://localhost:44326/api/Account/getUserById?id=' + id);
+    }
+};

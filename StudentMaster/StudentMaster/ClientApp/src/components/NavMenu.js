@@ -26,9 +26,9 @@ class NavMenu extends React.Component {
     );
 
     const userLinks = (
-      <LinkContainer to={"/user"} activeClassName=""  >
+      <LinkContainer to={"/profile"} activeClassName=""  >
         <NavItem>
-          <Glyphicon glyph="sign up" />{user.roles}
+          <Glyphicon glyph="sign up" />My profile
         </NavItem>
       </LinkContainer>
     );

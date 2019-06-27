@@ -8,9 +8,10 @@ import ForgotPasswordPage from './components/ForgotPasswordPage';
 import ResetPasswordPage from './components/ResetPasswordPage';
 import ConfirmEmail from './components/Confirmation/ConfirmEmailPage';
 import AdminPage from './components/Admin/AdminPage';
-import requireAuth from "./utils/requireAuth";
-import PickDatePage from "./components/Account/PickDatePage"
-import StudyInfo from "./components/Account/StudyInfo"
+import requireAuth from './utils/requireAuth';
+import PickDatePage from './components/Account/PickDatePage';
+import StudyInfo from './components/Account/StudyInfo';
+import Profile from './components/Account/Profile';
 
 
 
@@ -29,6 +30,8 @@ export default () => (
     <Route path="/confirmemail" component={ConfirmEmail} />
     <Route path="/pickdate" component={requireAuth(PickDatePage, "user")} />
     <Route path="/schedule" component={requireAuth(StudyInfo, "user")} />
+    <Route path="/profile" component={Profile} />
+
 
 
     <Route path='/admin' component={requireAuth(AdminPage, "admin")} />

@@ -1,6 +1,4 @@
-import React, {
-    Component
-} from 'react';
+import React from 'react';
 import PropTypes, {
     number
 } from 'prop-types';
@@ -47,7 +45,7 @@ class StudyInfo extends React.Component {
             );
             return (<div>
                 { tillEnd > 0 ? tillEndPositiveScenario : ''}
-                { tillEnd == 0 ?<h1>Your studying starts today</h1> : ''}
+                { tillEnd === 0 ?<h1>Your studying starts today</h1> : ''}
                 { tillEnd < 0 ?<h1>You didn`t choose any study date</h1> : ''}
                 </div>
             );

@@ -12,7 +12,6 @@ import Select from 'react-select';
 import Moment from 'react-moment';
 import {
     Pagination,
-    Row,
     Col
 } from "react-bootstrap";
 import "./AdminPage.css"
@@ -73,10 +72,7 @@ class AdminPage extends Component {
         this.handleClickEdit = this.handleClickEdit.bind(this);
     }
     componentWillMount() {
-
         this.props.getUsers();
-        console.log("===")
-        console.log(this.props.pages);
     }
     componentDidMount() {
 
@@ -94,7 +90,7 @@ class AdminPage extends Component {
         console.log(id)
     }
     handleSort(column) {
-        if (this.state.selectedsort.value == column)
+        if (this.state.selectedsort.value === column)
             column++;
 
         this.setState({
@@ -112,7 +108,6 @@ class AdminPage extends Component {
         )
     }
     handlePageChange(pageNumber) {
-        console.log("active page is");
         this.setState({
                 currentPage: pageNumber
             }, () =>
@@ -126,8 +121,8 @@ class AdminPage extends Component {
                 <div className="row align-items-center">
                 <Col md={6}><div className="input-group input-group-lg">
 
-<input placeholder="Search" value={this.state.search} type="text" className="search form-control" onChange={this.handleChange} aria-label="Sizing example input" aria-Downribedby="inputGroup-sizing-lg" />
-<span class="input-group-btn ">
+<input placeholder="Search" value={this.state.search} type="text" className="search form-control" onChange={this.handleChange} aria-label="Sizing example input"  />
+<span className="input-group-btn ">
 
 </span>
 
@@ -156,8 +151,8 @@ class AdminPage extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.users.map(ct =>
-                            <tr>
+                        {this.props.users.map((ct,i) =>
+                            <tr key={i}>
                                 <th scope="row">{ct.userId}</th>
                                 <td>{ct.firstName}</td>
                                 <td>{ct.lastName}</td>

@@ -72,7 +72,6 @@
 
     ul .dropdown-menu {
         float: left !important;
-        width: -webkit-fill-available !important;
         background-color: #27292b !important;
         border-radius: 0;
     }

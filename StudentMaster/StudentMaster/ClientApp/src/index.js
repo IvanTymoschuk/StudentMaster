@@ -20,7 +20,6 @@ const history = createBrowserHistory({ basename: baseUrl });
 // Get the application-wide store instance, prepopulating with state from the server where available.
 const initialState = window.initialReduxState;
 const store = configureStore(history, initialState);
-
 if(localStorage.jwtToken) {
   let token=localStorage.getItem("jwtToken");
   let user=jwtDecode(token);
