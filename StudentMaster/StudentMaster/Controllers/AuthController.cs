@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using StudentMaster.Models;
+using StudentMaster.Services;
 using StudentMaster.ViewModels;
 
 namespace StudentMaster.Controllers
@@ -16,58 +17,43 @@ namespace StudentMaster.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private UserManager<User> userManager;
+        private readonly AccountService accountService;
 
-        public AuthController(UserManager<User> userManager)
+        public AuthController(AccountService accountService)
         {
-            this.userManager = userManager;
+            this.accountService = accountService;
         }
 
-        
+
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginViewModel model)
         {
+
             if (!ModelState.IsValid)
             {
-                return BadRequest(model);
+                return BadRequest("Failed to login with social network");
             }
-            var user = await userManager.FindByNameAsync(model.Email);
-            if(user !=null && await userManager.CheckPasswordAsync(user,model.Password))
+
+            if (!await accountService.IsEmailConfirmed(model.Email))
             {
-                
-                if (!await userManager.IsEmailConfirmedAsync(user))
-                {
-                    
-                    return BadRequest(new { invalid = "You didn`t confirm your email" });
-                }
-                var roles = userManager.GetRolesAsync(user).Result;
+                return BadRequest(new { invalid = "Email is not confirmed" });
 
-                var claims = new List<Claim>()
-                {
-                
-                new Claim("id", user.Id),
-                new Claim("name", user.UserName),
-                };
+            }
 
-                foreach (var role in roles)
+            var token = await this.accountService.GetTokenLogin(model);
+            if (token == null)
+            {
+                return BadRequest(new { invalid = "Login or password is incorrect" });
+            }
+            else
+            {
+                return Ok(new
                 {
-                    claims.Add(new Claim("roles", role));
-                }
-                var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authnetication"));
-                
-                var token = new JwtSecurityToken(
-                    claims:claims,
-
-                    signingCredentials:new Microsoft.IdentityModel.Tokens.SigningCredentials(signingKey,SecurityAlgorithms.HmacSha256)
-                    
-                    );
-                return  Ok(new
-                {
-                    token = new JwtSecurityTokenHandler().WriteToken(token),
+                    token
                 });
             }
-            return BadRequest(new { invalid = "Email or password is not correct" });
         }
+          
     }
 }

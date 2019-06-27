@@ -1,9 +1,9 @@
 
-form {
-    width: 50%;
+.myform {
+    width: 100%;
 
 
-    display: inline-block;
+
 }
 .mycontain{
     text-align: center;

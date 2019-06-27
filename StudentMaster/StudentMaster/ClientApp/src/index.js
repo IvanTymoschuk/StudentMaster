@@ -24,8 +24,6 @@ const store = configureStore(history, initialState);
 if(localStorage.jwtToken) {
   let token=localStorage.getItem("jwtToken");
   let user=jwtDecode(token);
-  console.log("from index");
-  console.log(user);
   setAuthorizationToken(token);
   store.dispatch(setCurrentUser(user));
 }

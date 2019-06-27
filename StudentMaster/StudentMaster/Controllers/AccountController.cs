@@ -1,18 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using Hangfire;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using StudentMaster.Data;
-using StudentMaster.Models;
 using StudentMaster.Services;
 using StudentMaster.ViewModels;
 
@@ -22,12 +9,10 @@ namespace StudentMaster.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private UserManager<User> userManager;
-        private readonly ApplicationDbContext _appDbContext;
-        public AccountController(UserManager<User> userManager, ApplicationDbContext appDbContext)
+        private readonly AccountService accountService;
+        public AccountController(AccountService accountService)
         {
-            this._appDbContext = appDbContext;
-            this.userManager = userManager;
+            this.accountService = accountService;
         }
 
         [HttpPost("sociallogin")]
@@ -37,51 +22,18 @@ namespace StudentMaster.Controllers
             {
                 return BadRequest("Failed to login with social network");
             }
-
-            var user = userManager.FindByEmailAsync(model.Email).Result;
-            if (user == null)
+            var token = await this.accountService.GetTokenSocialLogin(model);
+            if (token == null)
             {
-                user = new User
-                {
-                    UserName = model.Email,
-                    Email = model.Email,
-                    FirstName = model.Name
-                };
-                var result = await userManager.CreateAsync(user);
-                await userManager.AddToRoleAsync(user, "user");
-                if (!result.Succeeded)
-                {
-                    return BadRequest(new { invalid = "Something went wrong!" });
-                }
+                return BadRequest(new { invalid = "Something went wrong" });
             }
-           
-            var roles = userManager.GetRolesAsync(user).Result;
-
-            var claims = new List<Claim>()
+            else
+            {
+                return Ok(new
                 {
-
-                new Claim("id", user.Id),
-                new Claim("name", user.UserName),
-                };
-
-            foreach (var role in roles)
-            {
-                claims.Add(new Claim("roles", role));
+                    token
+                });
             }
-            
-            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authnetication"));
-
-            var token = new JwtSecurityToken(
-                expires: DateTime.UtcNow.AddHours(1),
-                claims: claims,
-                signingCredentials: new Microsoft.IdentityModel.Tokens.SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
-
-                );
-            return Ok(new
-            {
-                token = new JwtSecurityTokenHandler().WriteToken(token),
-                expiration = token.ValidTo
-            });
         }
 
 
@@ -90,23 +42,18 @@ namespace StudentMaster.Controllers
 
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-
-
-                var user = await userManager.FindByIdAsync(model.UserId);
-                if (user == null)
-                {
-                    return BadRequest(new { invalid = "UserId is not registred in system" });
-                }
-                var result = await userManager.ResetPasswordAsync(user, model.Code, model.Password);
-                if (result.Succeeded)
-                {
-                    return Ok();
-                }
+                return BadRequest(ModelState);
             }
-            return BadRequest(ModelState);
-
+            if (accountService.ResetPassword(model).Result.Succeeded)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest(new { invalid = "UserId is not registred in system" });
+            }
         }
 
         [HttpPost]
@@ -116,55 +63,20 @@ namespace StudentMaster.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(model);
-            var user = await userManager.FindByIdAsync(model.UserId);
-            if (user == null)
-            {
-                return BadRequest(new { invalid = "UserId is not registred in system" });
-            }
-
-            user.StudyDate = model.StudyDate;
-            _appDbContext.Entry(user).State = EntityState.Modified;
-            _appDbContext.SaveChanges();
-
-
-            BackgroundJob.Schedule(
-     () => SendNotification(user),
-     user.StudyDate.AddMonths(-1));
-
-
-            BackgroundJob.Schedule(
-     () => SendNotification(user),
-     user.StudyDate.AddDays(-7));
-
-
-            BackgroundJob.Schedule(
-     () => SendNotification(user),
-     user.StudyDate.AddDays(-1).Date + new TimeSpan(7, 0, 0));
-
+            await accountService.PickStudyDate(model);
             return Ok();
         }
 
-        public async Task SendNotification(User user)
-        {
-
-            //var callbackUrl = Url.Action("", "schedule", new { }, protocol: HttpContext.Request.Scheme);
-            EmailService emailService = new EmailService();
-            await emailService.SendEmailAsync(user.Email, "Notification",
-                $"Your studing will start: ");
-        }
+       
 
         [HttpGet]
         [Route("studyinfo")]
-        public async Task<IActionResult> StudyInf([FromQuery]string id)
+        public async Task<IActionResult> StudyInfo([FromQuery]string id)
         {
-            var user = await userManager.FindByIdAsync(id);
-            if (user == null)
-            {
-                return BadRequest(new { invalid = "UserId is not registred in system" });
-            }
-           
-           var  tillEnd = user.StudyDate - DateTime.Now;
-            return Ok(new {studyDate= user.StudyDate, tillEnd = tillEnd.Days } );
+            var result = await accountService.GetStudyInfo(id);
+           if (result!=null)
+            return Ok(result);
+           else return BadRequest(new { invalid = "UserId is not registred in system" });
         }
 
         [HttpPost]
@@ -174,18 +86,10 @@ namespace StudentMaster.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await userManager.FindByNameAsync(model.Email);
-                if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
-                {
-                    return BadRequest(new { invalid = "This email is not registred in system" });
-                }
-
-                var code = await userManager.GeneratePasswordResetTokenAsync(user);
-                var callbackUrl = Url.Action("", "resetpassword", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                EmailService emailService = new EmailService();
-                await emailService.SendEmailAsync(model.Email, "Reset Password",
-                    $"For reset password - follow: <a href='{callbackUrl}'>link</a>");
-                return Ok(new { answer = "Check your email" });
+               if(await accountService.ForgotPassword(model))
+                return Ok();
+               else
+                 return BadRequest(new { invalid = "This email is not registred in system" });
             }
             return BadRequest(ModelState);
         }

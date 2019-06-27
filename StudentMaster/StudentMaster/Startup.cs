@@ -12,8 +12,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using StudentMaster.Data;
 using StudentMaster.Models;
+using StudentMaster.Services;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Text;
+using AutoMapper;
+using BackEnd.ViewModels.Mappings;
 
 namespace StudentMaster
 {
@@ -23,7 +26,7 @@ namespace StudentMaster
         {
             Configuration = configuration;
         }
-
+       
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -47,8 +50,18 @@ namespace StudentMaster
 
             });
 
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new ViewModelToEntityMappingProfile());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
+
+
             services.AddHangfire(x => x.UseSqlServerStorage("Server=(localdb)\\mssqllocaldb;Database=StudentMasterdb;Trusted_Connection=True;"));
             services.AddHangfireServer();
+
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -91,6 +104,11 @@ namespace StudentMaster
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            
+            services.AddScoped<AdminService>();
+            services.AddScoped<AccountService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -8,7 +8,7 @@ import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
 import { Row, Col } from 'react-bootstrap'
 import './RegisterForm.css'
-
+import DatePicker from 'react-date-picker';
 
 
 class RegisterForm extends Component {
@@ -24,7 +24,7 @@ class RegisterForm extends Component {
             isLoading: false,
             firstName: '',
             lastName: '',
-            birthDate: ''
+            birthDate: new Date()
         };
         this.signup = this.signup.bind(this);
     }
@@ -47,8 +47,25 @@ class RegisterForm extends Component {
                 { [name]: value })
         }
     }
+    handleDateChange = (e) => {
+        if (!!this.state.errors.birthDate) {
+            let errors = Object.assign({}, this.state.errors);
+            delete errors.birthDate;
+            this.setState(
+                {
+                    birthDate: e,
+                    errors
+                }
+            )
+        }
+        else {
+            this.setState(
+                { birthDate: e })
+        }
+    }
     handleChange = (e) => {
-        this.setStateByErrors(e.target.name, e.target.value);
+
+            this.setStateByErrors(e.target.name, e.target.value);
     }
     isValidPassword(email) {
 
@@ -64,27 +81,13 @@ class RegisterForm extends Component {
                 name: res.name,
                 email: res.email
             })
-                .then(() => {this.setState({ done: true }) ; this.context.router.history.push('/') },
+                .then(() => { this.setState({ done: true }); this.context.router.history.push('/') },
 
                     (err) => {
                         this.setState({ errors: err.response.data, isLoading: false });
                     }
                 );
         };
-
-
-        // if (type === 'google') {
-        //     this.props.social_login({
-        //         name: res.w3.ig,
-        //         email: res.w3.U3
-        //     })
-        //         .then(() => { this.context.router.history.push('/'); this.setState({ done: true }) },
-
-        //             (err) => {
-        //                 this.setState({ errors: err.response.data, isLoading: false });
-        //             }
-        //         );
-        // };
     }
 
 
@@ -120,9 +123,11 @@ class RegisterForm extends Component {
                     }
                 );
         }
+        
         else {
             this.setState({ errors });
         }
+
 
     }
     render() {
@@ -180,7 +185,7 @@ class RegisterForm extends Component {
                         onChange={this.handleChange} />
                     {!!errors.confirmPassword ? <span className="help-block">{errors.confirmPassword}</span> : ''}
                 </div>
-                <div className={classnames('form-group', { 'has-error': !!errors.firstName })}>
+                <div className={classnames('form-group', { 'has-error': !!errors.FirstName })}>
 
                     <input type="text"
                         className="form-control"
@@ -190,9 +195,9 @@ class RegisterForm extends Component {
 
                         value={this.state.firstName}
                         onChange={this.handleChange} />
-                    {!!errors.firstName ? <span className="help-block">{errors.firstName}</span> : ''}
+                    {!!errors.FirstName ? <span className="help-block">{errors.FirstName}</span> : ''}
                 </div>
-                <div className={classnames('form-group', { 'has-error': !!errors.lastName })}>
+                <div className={classnames('form-group', { 'has-error': !!errors.LastName })}>
                     <input type="text"
                         className="form-control"
                         id="lastName"
@@ -201,49 +206,31 @@ class RegisterForm extends Component {
 
                         value={this.state.lastName}
                         onChange={this.handleChange} />
-                    {!!errors.lastName ? <span className="help-block">{errors.lastName}</span> : ''}
+                    {!!errors.LastName ? <span className="help-block">{errors.LastName}</span> : ''}
                 </div>
-                <div className={classnames('form-group', { 'has-error': !!errors.birthDate })}>
-                    <input type="Date"
-                        className="form-control"
-                        id="birthDate"
-                        name="birthDate"
-                        placeholder="Date of Birth"
-
+                <div className={classnames('form-group', { 'has-error': !!errors.BirthDate })}>
+                    <DatePicker
+                        className="date"
+                        onChange={this.handleDateChange}
                         value={this.state.birthDate}
-                        onChange={this.handleChange} />
-                    {!!errors.birthDate ? <span className="help-block">{errors.birthDate}</span> : ''}
+                    />
+                    {!!errors.BirthDate ? <span className="help-block">{errors.BirthDate}</span> : ''}
                 </div>
                 <div className="form-group">
 
 
                     <button type="submit" className="btn btn-info btn-block" disabled={isLoading}>Register</button>
-
-                </div>
-                <div>
-                    <Row className="d-flex justify-content-center">
-              
-                    <GoogleLogin
-                        clientId="465803180827-n8oa659teb415347p0a3b2qoq9ir0gvg.apps.googleusercontent.com"
-                        buttonText="Login with google"
-                        onSuccess={responseGoogle}
-                        onFailure={responseGoogle}
-                        cookiePolicy={'single_host_origin'}
-                    />
-                        </Row>
-             
-                        <Row >
-
                     <FacebookLogin
                         appId="355421778452383"
                         autoLoad={true}
                         fields="name,email"
+                        cssClass="my-facebook-button-class"
+                        icon="fa-facebook"
                         // onClick={componentClicked}
                         callback={responseFacebook} />
-             
 
-                        </Row>
                 </div>
+
 
             </form>
         );
@@ -261,4 +248,4 @@ RegisterForm.propTypes =
 
     }
 
-export default connect(null, { register ,social_login})(RegisterForm);
+export default connect(null, { register, social_login })(RegisterForm);
