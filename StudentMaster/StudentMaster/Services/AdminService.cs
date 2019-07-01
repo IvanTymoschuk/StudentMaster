@@ -27,19 +27,15 @@ namespace StudentMaster.Services
         public async Task<bool> EditUser(EditUserViewModel model)
         {
             var user = await userManager.FindByIdAsync(model.UserId);
-            if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
+            if (user == null)
             {
                 return false;
             }
 
-            user.BirthDate = model.BirthDate;
             user.Email = model.Email;
             user.FirstName = model.FirstName;
             user.LastName = model.LastName;
-            user.BirthDate = model.BirthDate;
-
-            await userManager.UpdateAsync(user);
-            
+            await userManager.UpdateAsync(user);   
             applicationDbContext.SaveChanges();
 
             return true;
@@ -55,7 +51,7 @@ namespace StudentMaster.Services
             //Filtring
             if (!String.IsNullOrEmpty(name))
             {
-                AllUsers = AllUsers.Where(p => p.FirstName.Contains(name) || p.LastName.Contains(name));
+                AllUsers = AllUsers.Where(p => p.FirstName.Contains(name) || p.LastName.Contains(name) || p.Email.Contains(name));
             }
 
             //Sorting

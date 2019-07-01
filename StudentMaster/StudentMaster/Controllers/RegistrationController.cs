@@ -32,28 +32,38 @@ namespace StudentMaster.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-           if(!await accountService.CreateUser(model))
+            string code = await accountService.CreateUser(model);
+            if(code == null)
                 return BadRequest(new { invalid = "Account with this email has already registred" });
+            
+            var callbackUrl = Url.Action(
 
+                "ConfirmEmail",
+                "Registration",
+                new {email = model.Email, code = code },
+
+                protocol: HttpContext.Request.Scheme);
+            EmailService emailService = new EmailService();
+            await emailService.SendEmailAsync(model.Email, "Confirm your account",
+                $"Confirm registration, follow : <a href='{callbackUrl}'>link</a>");
             return Ok();
 
           
         }
 
         [HttpGet]
-        [HttpPost("confirmemail")]
+        [Route("confirmemail")]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string userId, string code, string username)
+        public async Task<IActionResult> ConfirmEmail(string email, string code)
         {
-            if (userId == null || code == null)
+            if (email == null || code == null)
             {
                 return BadRequest("Error");
             }
-            if (await accountService.FindByUserId(userId) == null)
+            if (await accountService.FindByUserEmail(email) == null)
                 return BadRequest("Error");
-            if(await accountService.ConfirmEmail(await accountService.FindByUserId(userId), code))
-                return RedirectToAction("Index", "Home");
+            if (await accountService.ConfirmEmail(await accountService.FindByUserEmail(email), code))
+                return Redirect("http://localhost:3000/pickdate");
             else
                 return BadRequest("Error");
         }

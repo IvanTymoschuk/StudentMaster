@@ -1,58 +1,75 @@
-import React, { Component } from 'react';
+import React, {
+} from 'react';
 import DatePicker from 'react-date-picker';
 import PropTypes from 'prop-types';
-import { connect } from "react-redux";
-import { pickDate } from "../../actions/accActions";
+import {
+    connect
+} from "react-redux";
+import {
+    pickDate
+} from "../../actions/accActions";
 import classnames from 'classnames';
 import './PickDatePage.css';
-import { Row, Col,Panel } from 'react-bootstrap'
+import {
+    Panel
+} from 'react-bootstrap'
 class PickDatePage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            studyDate: new Date(),
-            errors: {
+        constructor(props) {
+            super(props);
+            this.state = {
+                studyDate: new Date(),
+                errors: {}
             }
-        }
-        this.onChange = this.onChange.bind(this);
+            this.onChange = this.onChange.bind(this);
 
-    }
-    setStateByErrors = (name, value) => {
-        if (!!this.state.errors[name]) {
-            let errors = Object.assign({}, this.state.errors);
-            delete errors[name];
-            this.setState(
-                {
+        }
+        setStateByErrors = (name, value) => {
+            if (!!this.state.errors[name]) {
+                let errors = Object.assign({}, this.state.errors);
+                delete errors[name];
+                this.setState({
                     [name]: value,
                     errors
-                }
-            )
+                })
+            } else {
+                this.setState({
+                    [name]: value
+                })
+            }
         }
-        else {
-            this.setState(
-                { [name]: value })
+        onChange(studyDate) {
+            this.setState({
+                studyDate
+            })
         }
-    }
-    onChange(studyDate) { this.setState({ studyDate }) }
 
-    onSubmitForm = (e) => {
-        e.preventDefault();
-        const { user } = this.props.auth;
-        let id = user.id;
-        const { studyDate } = this.state;
-        this.props.pickDate({
-            userId: id,
-            studyDate
-        }).then(() => { 
-            this.props.history.push("/schedule");
-        },
-            (err) => {
-                console.log(err.response.data);
-                this.setState({ errors: err.response.data, isLoading: false });
-            });
-    }
-    render() {
-        const { errors } = this.state;
+        onSubmitForm = (e) => {
+            e.preventDefault();
+            const {
+                user
+            } = this.props.auth;
+            let id = user.id;
+            const {
+                studyDate
+            } = this.state;
+            this.props.pickDate({
+                userId: id,
+                studyDate
+            }).then(() => {
+                    this.props.history.push("/schedule");
+                },
+                (err) => {
+                    console.log(err.response.data);
+                    this.setState({
+                        errors: err.response.data,
+                        isLoading: false
+                    });
+                });
+        }
+        render() {
+                const {
+                    errors
+                } = this.state;
         return (
            
             <div className="mycontain">
@@ -67,8 +84,6 @@ class PickDatePage extends React.Component {
                             onChange={this.onChange}
                             value={this.state.studyDate}
                         />
-
-
                         {!!errors.StudyDate ? <span className="help-block">{errors.StudyDate}</span> : ''}
                     </div>
                     {
@@ -87,14 +102,15 @@ class PickDatePage extends React.Component {
     }
 }
 
-PickDatePage.propTypes =
-    {
-        pickDate: PropTypes.func.isRequired
-    }
+PickDatePage.propTypes = {
+    pickDate: PropTypes.func.isRequired
+}
 const mapStateToProps = (state) => {
     return {
         auth: state.auth
     };
 }
 
-export default connect(mapStateToProps, { pickDate })(PickDatePage);
+export default connect(mapStateToProps, {
+    pickDate
+})(PickDatePage);

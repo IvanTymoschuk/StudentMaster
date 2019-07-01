@@ -10,13 +10,11 @@ import { logout } from '../actions/authActions';
 
 class NavMenu extends React.Component {
   state = {}
-  // componentDidMount(){
-  //   console.log(this.props.auth.user.name);
-  // }
   logout(e) {
     e.preventDefault();
     this.props.logout();
     this.props.history.push('/');
+    
   }
   render() {
     const { isAuthenticated, user } = this.props.auth;
@@ -28,9 +26,9 @@ class NavMenu extends React.Component {
     );
 
     const userLinks = (
-      <LinkContainer to={"/user"} activeClassName=""  >
+      <LinkContainer to={"/profile"} activeClassName=""  >
         <NavItem>
-          <Glyphicon glyph="sign up" />{user.roles}
+          <Glyphicon glyph="sign up" />My profile
         </NavItem>
       </LinkContainer>
     );
@@ -71,7 +69,11 @@ class NavMenu extends React.Component {
               <Glyphicon glyph="list" />Schedule
           </NavItem>
           </LinkContainer> : ''}
-
+          {isAuthenticated && user.roles === 'user' ? <LinkContainer to={'/pickdate'} activeClassName=''>
+          <NavItem>
+            <Glyphicon glyph='book' /> Studying
+            </NavItem>
+          </LinkContainer> : ''}
           {isAuthenticated && user.roles === 'admin' ? <LinkContainer to={'/admin'} activeClassName=''>
             <NavItem>
               <Glyphicon glyph='cog' /> Admin

@@ -9,7 +9,7 @@ namespace StudentMaster.ViewModels
     public class ResetPasswordViewModel
     {
         [Required]
-        public string UserId { get; set; }
+        public string Email { get; set; }
 
         [Required(ErrorMessage = "Cant't be empty")]
         [RegularExpression(@"^(?=.*\d)(?=.*[a-zA-Z]).{6,20}$", ErrorMessage = "Password must be at least 6 characters and contain digits, upper or lower case")]

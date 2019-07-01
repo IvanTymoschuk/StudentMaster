@@ -1,18 +1,17 @@
-
 .myform {
     width: 100%;
-
-
-
 }
-.mycontain{
+
+.mycontain {
     text-align: center;
 }
-.date{
-     display: inline-block;
+
+.date {
+    display: inline-block;
 
     font-size: 20px;
 }
-button{
+
+button {
     float: right;
 }

@@ -67,6 +67,17 @@ namespace StudentMaster.Controllers
             return Ok();
         }
 
+        [HttpGet]
+        [Route("getUserById")]
+        public async Task<EditUserViewModel> GetUserById([FromQuery] string id)
+        {
+            var user = accountService.GetUserData(id);
+
+            if (user == null)
+                return null;
+
+            return await user;
+        }
        
 
         [HttpGet]
@@ -86,10 +97,16 @@ namespace StudentMaster.Controllers
         {
             if (ModelState.IsValid)
             {
-               if(await accountService.ForgotPassword(model))
-                return Ok();
-               else
-                 return BadRequest(new { invalid = "This email is not registred in system" });
+                string code = await accountService.ForgotPassword(model);
+
+                if (code ==null)
+                    return BadRequest(new { invalid = "This email is not registred in system" });
+
+                var callbackUrl = Url.Action("", "resetpassword", new { email = model.Email, code = code }, protocol: HttpContext.Request.Scheme);
+                EmailService emailService = new EmailService();
+                await emailService.SendEmailAsync(model.Email, "Reset Password",
+                    $"For reset password - follow: <a href='{callbackUrl}'>link</a>");
+
             }
             return BadRequest(ModelState);
         }

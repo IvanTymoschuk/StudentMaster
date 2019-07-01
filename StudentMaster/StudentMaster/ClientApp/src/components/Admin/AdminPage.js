@@ -12,10 +12,10 @@ import Select from 'react-select';
 import Moment from 'react-moment';
 import {
     Pagination,
-    Row,
     Col
 } from "react-bootstrap";
 import "./AdminPage.css"
+import EditUser from '../Account/EditUser';
 const sorting = [{
         label: "First Name Up",
         value: 0
@@ -62,6 +62,7 @@ class AdminPage extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            editUserId: '',
             search: '',
             selectedsort: sorting[0],
             sortasc: true,
@@ -71,12 +72,11 @@ class AdminPage extends Component {
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleClickEdit = this.handleClickEdit.bind(this);
+        this.onClickId = this.onClickId.bind(this);
+
     }
     componentWillMount() {
-
         this.props.getUsers();
-        console.log("===")
-        console.log(this.props.pages);
     }
     componentDidMount() {
 
@@ -91,10 +91,14 @@ class AdminPage extends Component {
 
     }
     handleClickEdit(id) {
-        console.log(id)
+
+        this.setState({editUserId:id});
+        
+        
+        
     }
     handleSort(column) {
-        if (this.state.selectedsort.value == column)
+        if (this.state.selectedsort.value === column)
             column++;
 
         this.setState({
@@ -112,12 +116,16 @@ class AdminPage extends Component {
         )
     }
     handlePageChange(pageNumber) {
-        console.log("active page is");
         this.setState({
                 currentPage: pageNumber
             }, () =>
             this.props.getUsers(this.state.currentPage, this.state.search, this.state.selectedsort.value)
         );
+    }
+
+    onClickId(){
+
+        this.setState({editUserId: null});
     }
     render() {
 
@@ -126,8 +134,8 @@ class AdminPage extends Component {
                 <div className="row align-items-center">
                 <Col md={6}><div className="input-group input-group-lg">
 
-<input placeholder="Search" value={this.state.search} type="text" className="search form-control" onChange={this.handleChange} aria-label="Sizing example input" aria-Downribedby="inputGroup-sizing-lg" />
-<span class="input-group-btn ">
+<input placeholder="Search" value={this.state.search} type="text" className="search form-control" onChange={this.handleChange} aria-label="Sizing example input"  />
+<span className="input-group-btn ">
 
 </span>
 
@@ -156,8 +164,8 @@ class AdminPage extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.users.map(ct =>
-                            <tr>
+                        {this.props.users.map((ct,i) =>
+                            <tr key={i}>
                                 <th scope="row">{ct.userId}</th>
                                 <td>{ct.firstName}</td>
                                 <td>{ct.lastName}</td>
@@ -171,6 +179,7 @@ class AdminPage extends Component {
                         )}
                     </tbody>
                 </table>
+                
                 <Pagination
                 className="users-pagination pull-right"
                 bsSize="large"
@@ -180,6 +189,8 @@ class AdminPage extends Component {
                     onSelect={this.handlePageChange.bind(this)}
                     activePage={this.state.currentPage}
                 ></Pagination>
+                {this.state.editUserId?<EditUser onClick={this.onClickId} id={this.state.editUserId}></EditUser>:''}
+                
             </div>
 
         )

@@ -12,15 +12,15 @@ namespace StudentMaster.ViewModels
         [Required(ErrorMessage = "Can't be empty")]
         public string UserId { get; set; }
 
+        [Required(ErrorMessage = "Can't be empty")]
         [EmailAddress(ErrorMessage = "Not valid email")]
         public string Email { get; set; }
 
+        [Required(ErrorMessage = "Can't be empty")]
         public string FirstName { get; set; }
 
+        [Required(ErrorMessage = "Can't be empty")]
         public string LastName { get; set; }
 
-        [DataType(DataType.Date)]
-        [DateAttribute(FromYears: -70, ToYears: -6, ErrorMessage = "Value for {0} must be between {1} and {2}")]
-        public DateTime BirthDate { get; set; }
     }
 }

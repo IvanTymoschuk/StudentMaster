@@ -41,3 +41,14 @@ export function studyInfo(data) {
         return axios.get('https://localhost:44326/api/Account/studyinfo?id=' + data.id);
     }
 };
+export function getUserById(id) {
+    return dispatch => {
+        return axios.get('https://localhost:44326/api/Account/getUserById?id=' + id);
+    }
+};
+
+export function editUser(data) {
+    return dispatch => {
+        return axios.post('https://localhost:44326/api/Admin/edituser',data);
+    }
+};
