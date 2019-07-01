@@ -157,20 +157,25 @@ namespace StudentMaster.Services
             appDbContext.Entry(user).State = EntityState.Modified;
             appDbContext.SaveChanges();
 
+            if (user.StudyDate.AddMonths(-1) >= DateTime.Now)
+            {
+                BackgroundJob.Schedule(
+                () => SendNotification(user),
+                user.StudyDate.AddMonths(-1));
+            }
+            if (user.StudyDate.AddDays(-7) >= DateTime.Now)
+            {
+                BackgroundJob.Schedule(
+                () => SendNotification(user),
+                user.StudyDate.AddDays(-7));
+            }
 
-                    BackgroundJob.Schedule(
-             () => SendNotification(user),
-             user.StudyDate.AddMonths(-1));
-
-
-                    BackgroundJob.Schedule(
-             () => SendNotification(user),
-             user.StudyDate.AddDays(-7));
-
-
-                    BackgroundJob.Schedule(
-             () => SendNotification(user),
-             user.StudyDate.AddDays(-1).Date + new TimeSpan(7, 0, 0));
+            if (user.StudyDate.AddDays(-1).Date + new TimeSpan(7, 0, 0) >= DateTime.Now)
+            {
+                BackgroundJob.Schedule(
+                () => SendNotification(user),
+                user.StudyDate.AddDays(-1).Date + new TimeSpan(7, 0, 0));
+            }
         }
         public async Task<bool> ConfirmEmail(User user, string code)
         {
