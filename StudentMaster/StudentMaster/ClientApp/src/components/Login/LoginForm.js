@@ -9,6 +9,7 @@ import {
     connect
 } from 'react-redux';
 import classnames from 'classnames';
+import {isValidPassword,isValidEmail} from '../../utils/validators'
 
 
 class LoginForm extends Component {
@@ -52,21 +53,15 @@ class LoginForm extends Component {
         done: false,
         isLoading: false
     }
-    isValidPassword(email) {
+    
 
-        return !/^(?=.*\d)(?=.*[a-zA-Z]).{6,20}$/.test(email);
-    }
-    isValidEmail(email) {
-
-        return !/.+@.+\.[A-Za-z]+$/.test(email);
-    }
     onSubmit(e) {
         e.preventDefault();
         let errors = {};
         if (this.state.email === '') errors.email = "Can't be empty!"
-        else if (this.isValidEmail(this.state.email)) errors.email = "Email is not valid"
+        else if (isValidEmail(this.state.email)) errors.email = "Email is not valid"
         if (this.state.password === '') errors.password = "Can't be empty!"
-        else if (this.isValidPassword(this.state.password)) errors.password = "Password must be at least 6 characters and contain digits, upper or lower case"
+        else if (isValidPassword(this.state.password)) errors.password = "Password must be at least 6 characters and contain digits, upper or lower case"
 
         const isValid = Object.keys(errors).length === 0
         if (isValid) {
@@ -77,9 +72,9 @@ class LoginForm extends Component {
 
                 () => {
                     this.setState({
-                            done: true
-                        })
-                        this.context.router.history.push('/');
+                        done: true
+                    })
+                    this.context.router.history.push('/');
                 },
                 (err) => this.setState({
                     errors: err.response.data,
@@ -138,7 +133,7 @@ class LoginForm extends Component {
 
             </form>
         );
-        
+
     }
 }
 

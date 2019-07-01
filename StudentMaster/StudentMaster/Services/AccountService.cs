@@ -1,5 +1,4 @@
 ﻿using Hangfire;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -9,9 +8,7 @@ using StudentMaster.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -160,20 +157,25 @@ namespace StudentMaster.Services
             appDbContext.Entry(user).State = EntityState.Modified;
             appDbContext.SaveChanges();
 
+            if (user.StudyDate.AddMonths(-1) >= DateTime.Now)
+            {
+                BackgroundJob.Schedule(
+                () => SendNotification(user),
+                user.StudyDate.AddMonths(-1));
+            }
+            if (user.StudyDate.AddDays(-7) >= DateTime.Now)
+            {
+                BackgroundJob.Schedule(
+                () => SendNotification(user),
+                user.StudyDate.AddDays(-7));
+            }
 
-                    BackgroundJob.Schedule(
-             () => SendNotification(user),
-             user.StudyDate.AddMonths(-1));
-
-
-                    BackgroundJob.Schedule(
-             () => SendNotification(user),
-             user.StudyDate.AddDays(-7));
-
-
-                    BackgroundJob.Schedule(
-             () => SendNotification(user),
-             user.StudyDate.AddDays(-1).Date + new TimeSpan(7, 0, 0));
+            if (user.StudyDate.AddDays(-1).Date + new TimeSpan(7, 0, 0) >= DateTime.Now)
+            {
+                BackgroundJob.Schedule(
+                () => SendNotification(user),
+                user.StudyDate.AddDays(-1).Date + new TimeSpan(7, 0, 0));
+            }
         }
         public async Task<bool> ConfirmEmail(User user, string code)
         {
@@ -204,7 +206,7 @@ namespace StudentMaster.Services
           
             EmailService emailService = new EmailService();
             await emailService.SendEmailAsync(user.Email, "Notification",
-                $"Your studing will start in: "+ (user.StudyDate - DateTime.Now).Days +" days");
+                $"Your studing will start in: "+ (user.StudyDate - DateTime.Now).Days +" days {"+user.StudyDate.ToShortDateString()+"}");
         }
         private JwtSecurityToken GenerateToken(User user)
         {

@@ -49,6 +49,6 @@ export function getUserById(id) {
 
 export function editUser(data) {
     return dispatch => {
-        return axios.post('https://localhost:44326/api/Admin/edituser',data);
+        return axios.post('https://localhost:44326/api/Admin/edituser', data);
     }
 };

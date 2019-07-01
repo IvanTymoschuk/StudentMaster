@@ -4,15 +4,15 @@ import Layout from './components/Layout';
 import Home from './components/Home';
 import LoginPage from './components/Login/LoginPage';
 import RegisterPage from './components/Register/RegisterPage'
-import ForgotPasswordPage from './components/ForgotPasswordPage';
-import ResetPasswordPage from './components/ResetPasswordPage';
-import ConfirmEmail from './components/Confirmation/ConfirmEmailPage';
+import ForgotPasswordPage from './components/Account/EmailNotifications/ForgotPasswordPage';
+import ResetPasswordPage from './components/Account/EmailNotifications/ResetPasswordPage';
+import ConfirmEmail from './components/Account/EmailNotifications/ConfirmEmailPage';
 import AdminPage from './components/Admin/AdminPage';
 import requireAuth from './utils/requireAuth';
 import PickDatePage from './components/Account/PickDatePage';
 import StudyInfo from './components/Account/StudyInfo';
 import Profile from './components/Account/Profile';
-import Edituser  from './components/Account/EditUser';
+import Edituser  from './components/Admin/EditUser';
 
 
 export default () => (
