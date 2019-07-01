@@ -13,7 +13,7 @@ import {
 } from "react-redux";
 import {
     resetPassword
-} from "../actions/authActions";
+} from "../../../actions/authActions";
 import {
     Redirect
 } from 'react-router-dom';

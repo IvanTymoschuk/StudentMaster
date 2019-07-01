@@ -14,90 +14,89 @@ import {
     Panel
 } from 'react-bootstrap'
 class PickDatePage extends React.Component {
-        constructor(props) {
-            super(props);
-            this.state = {
-                studyDate: new Date(),
-                errors: {}
-            }
-            this.onChange = this.onChange.bind(this);
+    constructor(props) {
+        super(props);
+        this.state = {
+            studyDate: new Date(),
+            errors: {}
+        }
+        this.onChange = this.onChange.bind(this);
 
-        }
-        setStateByErrors = (name, value) => {
-            if (!!this.state.errors[name]) {
-                let errors = Object.assign({}, this.state.errors);
-                delete errors[name];
-                this.setState({
-                    [name]: value,
-                    errors
-                })
-            } else {
-                this.setState({
-                    [name]: value
-                })
-            }
-        }
-        onChange(studyDate) {
+    }
+    setStateByErrors = (name, value) => {
+        if (!!this.state.errors[name]) {
+            let errors = Object.assign({}, this.state.errors);
+            delete errors[name];
             this.setState({
-                studyDate
+                [name]: value,
+                errors
+            })
+        } else {
+            this.setState({
+                [name]: value
             })
         }
+    }
+    onChange(studyDate) {
+        this.setState({
+            studyDate
+        })
+    }
 
-        onSubmitForm = (e) => {
-            e.preventDefault();
-            const {
-                user
-            } = this.props.auth;
-            let id = user.id;
-            const {
-                studyDate
-            } = this.state;
-            this.props.pickDate({
-                userId: id,
-                studyDate
-            }).then(() => {
-                    this.props.history.push("/schedule");
-                },
-                (err) => {
-                    console.log(err.response.data);
-                    this.setState({
-                        errors: err.response.data,
-                        isLoading: false
-                    });
+    onSubmitForm = (e) => {
+        e.preventDefault();
+        const {
+            user
+        } = this.props.auth;
+        let id = user.id;
+        const {
+            studyDate
+        } = this.state;
+        this.props.pickDate({
+            userId: id,
+            studyDate
+        }).then(() => {
+            this.props.history.push("/schedule");
+        },
+            (err) => {
+                this.setState({
+                    errors: err.response.data,
+                    isLoading: false
                 });
-        }
-        render() {
-                const {
-                    errors
-                } = this.state;
+            });
+    }
+    render() {
+        const {
+            errors
+        } = this.state;
         return (
-           
+
             <div className="mycontain">
-               
+
                 <form className="myform" onSubmit={this.onSubmitForm}>
-                <Panel>
-                <h2 className="header text-center">Pick your study date</h2>
-                    <div className={classnames('form-group', { 'has-error': !!errors.StudyDate })}>
-                        <DatePicker
-                        className="date"
-                            minDate={new Date()}
-                            onChange={this.onChange}
-                            value={this.state.studyDate}
-                        />
-                        {!!errors.StudyDate ? <span className="help-block">{errors.StudyDate}</span> : ''}
-                    </div>
-                    {
-                        !!errors.invalid ?
-                            <div className="alert alert-danger">
-                                <strong>Danger!</strong> {errors.invalid}.
+                    <Panel>
+                        <h2 className="header text-center">Pick your study date</h2>
+                        <div className={classnames('form-group', { 'has-error': !!errors.StudyDate })}>
+                            <DatePicker
+                                className="date"
+                                minDate={new Date()}
+                                onChange={this.onChange}
+                                value={this.state.studyDate}
+                            />
+                            {!!errors.StudyDate ? <span className="help-block">{errors.StudyDate}</span> : ''}
+                        </div>
+                        {
+                            !!errors.invalid ?
+                                <div className="alert alert-danger">
+                                    <strong>Danger!</strong> {errors.invalid}.
                         </div> : ''}
 
-                    <button type="submit" className="btn btn-info" >Next</button>
+                        <button type="submit" className="btn btn-info" >Next</button>
                     </Panel>
 
                 </form>
             </div>
-           );
+        );
 
     }
 }

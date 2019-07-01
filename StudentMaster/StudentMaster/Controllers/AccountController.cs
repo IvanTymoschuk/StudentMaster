@@ -36,7 +36,6 @@ namespace StudentMaster.Controllers
             }
         }
 
-
         [HttpPost]
         [Route("resetpassword")]
 

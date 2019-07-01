@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import RegisterForm from './RegisterForm';
-import { Col, Row,Panel } from 'react-bootstrap';
+import { Col, Row, Panel } from 'react-bootstrap';
 import { LinkContainer } from "react-router-bootstrap";
 
 class RegisterPage extends Component {

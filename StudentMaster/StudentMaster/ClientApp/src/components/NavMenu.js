@@ -14,7 +14,7 @@ class NavMenu extends React.Component {
     e.preventDefault();
     this.props.logout();
     this.props.history.push('/');
-    
+
   }
   render() {
     const { isAuthenticated, user } = this.props.auth;
@@ -55,23 +55,19 @@ class NavMenu extends React.Component {
           <Link to={"/"}>Student Master</Link>
         </Navbar.Brand>
         <Nav>
-
-
           <LinkContainer to={"/about"} activeClassName="">
             <NavItem>
               <Glyphicon glyph="info-sign" />About
           </NavItem>
           </LinkContainer>
-
-
           {isAuthenticated ? <LinkContainer to={"/schedule"} activeClassName="">
             <NavItem>
               <Glyphicon glyph="list" />Schedule
           </NavItem>
           </LinkContainer> : ''}
           {isAuthenticated && user.roles === 'user' ? <LinkContainer to={'/pickdate'} activeClassName=''>
-          <NavItem>
-            <Glyphicon glyph='book' /> Studying
+            <NavItem>
+              <Glyphicon glyph='book' /> Studying
             </NavItem>
           </LinkContainer> : ''}
           {isAuthenticated && user.roles === 'admin' ? <LinkContainer to={'/admin'} activeClassName=''>
@@ -79,10 +75,7 @@ class NavMenu extends React.Component {
               <Glyphicon glyph='cog' /> Admin
               </NavItem>
           </LinkContainer> : ''}
-
         </Nav>
-
-
 
         <Nav className="navbar-right">
           {isAuthenticated ? userLinks : reglinks}
