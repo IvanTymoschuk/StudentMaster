@@ -15,6 +15,7 @@ import {
     Col
 } from "react-bootstrap";
 import "./AdminPage.css"
+import EditUser from '../Account/EditUser';
 const sorting = [{
         label: "First Name Up",
         value: 0
@@ -61,6 +62,7 @@ class AdminPage extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            editUserId: '',
             search: '',
             selectedsort: sorting[0],
             sortasc: true,
@@ -70,6 +72,8 @@ class AdminPage extends Component {
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleClickEdit = this.handleClickEdit.bind(this);
+        this.onClickId = this.onClickId.bind(this);
+
     }
     componentWillMount() {
         this.props.getUsers();
@@ -87,7 +91,11 @@ class AdminPage extends Component {
 
     }
     handleClickEdit(id) {
-        console.log(id)
+
+        this.setState({editUserId:id});
+        
+        
+        
     }
     handleSort(column) {
         if (this.state.selectedsort.value === column)
@@ -113,6 +121,11 @@ class AdminPage extends Component {
             }, () =>
             this.props.getUsers(this.state.currentPage, this.state.search, this.state.selectedsort.value)
         );
+    }
+
+    onClickId(){
+
+        this.setState({editUserId: null});
     }
     render() {
 
@@ -166,6 +179,7 @@ class AdminPage extends Component {
                         )}
                     </tbody>
                 </table>
+                
                 <Pagination
                 className="users-pagination pull-right"
                 bsSize="large"
@@ -175,6 +189,8 @@ class AdminPage extends Component {
                     onSelect={this.handlePageChange.bind(this)}
                     activePage={this.state.currentPage}
                 ></Pagination>
+                {this.state.editUserId?<EditUser onClick={this.onClickId} id={this.state.editUserId}></EditUser>:''}
+                
             </div>
 
         )

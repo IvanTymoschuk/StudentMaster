@@ -32,8 +32,8 @@ namespace StudentMaster.Controllers
             {
                 return BadRequest(ModelState);
             }
-            if (!!await adminService.EditUser(model))
-                return BadRequest();
+            if (!await adminService.EditUser(model))
+                return BadRequest(new { invalid = "User is not found" } );
             return Ok();
         } 
 

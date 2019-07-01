@@ -63,7 +63,7 @@ namespace StudentMaster.Controllers
             if (await accountService.FindByUserEmail(email) == null)
                 return BadRequest("Error");
             if (await accountService.ConfirmEmail(await accountService.FindByUserEmail(email), code))
-                return Redirect("http://localhost:3000/");
+                return Redirect("http://localhost:3000/pickdate");
             else
                 return BadRequest("Error");
         }

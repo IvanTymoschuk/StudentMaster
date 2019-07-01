@@ -60,7 +60,6 @@ namespace StudentMaster.Services
             EditUserViewModel model = new EditUserViewModel()
             {
                 UserId = user.Id,
-                BirthDate = user.BirthDate,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email
