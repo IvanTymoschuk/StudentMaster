@@ -174,7 +174,7 @@ class AdminPage extends Component {
 
                                 <td><Moment format="YYYY/MM/DD">{ct.registredDate}</Moment></td>
                                 <td><Moment format="YYYY/MM/DD">{ct.studyDate}</Moment></td>
-                                <td> <button className="btn" onClick={() => this.handleClickEdit(ct.userId)}>Edit</button></td>
+                                <td> <button className="btn btn-default" onClick={() => this.handleClickEdit(ct.userId)}>Edit</button></td>
                             </tr>
 
                         )}
@@ -193,7 +193,7 @@ class AdminPage extends Component {
                 {this.state.editUserId ? <EditUser onClick={this.onClickId} id={this.state.editUserId}></EditUser> : ''}
 
             </div>
-
+           
         )
     }
 }

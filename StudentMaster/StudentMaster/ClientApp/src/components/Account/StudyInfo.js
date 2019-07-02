@@ -39,7 +39,7 @@ class StudyInfo extends React.Component {
         const tillEndPositiveScenario =
             (
                 <div>
-                    <h1 className="header">Till start of your studying left: {tillEnd}</h1>
+                    <h1 className="header">Till start of your studying left: {tillEnd} {tillEnd===1? "day" : "days"}</h1>
                     <h4 className="header">Date: <Moment format="YYYY/MM/DD">{studyDate}</Moment></h4>
                 </div>
             );

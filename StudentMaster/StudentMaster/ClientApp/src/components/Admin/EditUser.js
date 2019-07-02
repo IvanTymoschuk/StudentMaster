@@ -170,7 +170,7 @@ class EditUser extends React.Component {
 
                     </div>
                 </form>
-                <button onClick={this.props.onClick} className="btn btn-warn" >close</button>
+                <button onClick={this.props.onClick} className="btn btn-default" >Close</button>
 
             </div>)
     }
