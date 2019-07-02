@@ -27,25 +27,26 @@ namespace StudentMaster.Controllers
                 return BadRequest("Failed to login with social network");
             }
 
-            if (!await accountService.IsEmailConfirmed(model.Email))
-            {
-                return BadRequest(new { invalid = "Email is not confirmed" });
-
-            }
+            
 
             var token = await this.accountService.GetTokenLogin(model);
+            if (token == "")
+            {
+                return BadRequest(new { invalid = "Email is not registred" });
+            }
             if (token == null)
             {
                 return BadRequest(new { invalid = "Login or password is incorrect" });
             }
-            else
+            if (!await accountService.IsEmailConfirmed(model.Email))
             {
-                return Ok(new
-                {
-                    token
-                });
+                return BadRequest(new { invalid = "Email is not confirmed" });
             }
+            return Ok(new
+            {
+                token
+            });
         }
-          
     }
+
 }

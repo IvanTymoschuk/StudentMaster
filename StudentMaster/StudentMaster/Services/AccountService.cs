@@ -79,6 +79,8 @@ namespace StudentMaster.Services
         {
 
             var user = await userManager.FindByNameAsync(model.Email);
+            if (user == null)
+                return "";
             if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
             {
                 JwtSecurityToken token = GenerateToken(user);
