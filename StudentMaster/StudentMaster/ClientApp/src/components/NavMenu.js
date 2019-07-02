@@ -28,7 +28,7 @@ class NavMenu extends React.Component {
     const userLinks = (
       <LinkContainer to={"/profile"} activeClassName=""  >
         <NavItem>
-          <Glyphicon glyph="sign up" />My profile
+          <Glyphicon glyph="file" />My profile
         </NavItem>
       </LinkContainer>
     );
@@ -36,7 +36,7 @@ class NavMenu extends React.Component {
     const reglinks = (
       <LinkContainer to={"/registration"} activeClassName="">
         <NavItem>
-          <Glyphicon glyph="sign up" />Sign up
+          <Glyphicon glyph="share" />Sign up
           </NavItem>
       </LinkContainer>
     );
@@ -50,39 +50,45 @@ class NavMenu extends React.Component {
 
     );
     return (
-      <Navbar fluid inverse bg="dark" variant="dark">
+      <Navbar collapseOnSelect expand="lg" fluid inverse bg="dark" variant="dark">
         <Navbar.Brand>
           <Link to={"/"}>Student Master</Link>
         </Navbar.Brand>
-        <Nav>
-          <LinkContainer to={"/about"} activeClassName="">
-            <NavItem>
-              <Glyphicon glyph="info-sign" />About
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
+
+          <Nav >
+            <LinkContainer to={"/about"} activeClassName="">
+              <NavItem>
+                <Glyphicon glyph="info-sign" />About
           </NavItem>
-          </LinkContainer>
-          {isAuthenticated ? <LinkContainer to={"/schedule"} activeClassName="">
-            <NavItem>
-              <Glyphicon glyph="list" />Schedule
+            </LinkContainer>
+
+            {isAuthenticated ? <LinkContainer to={"/schedule"} activeClassName="">
+              <NavItem>
+                <Glyphicon glyph="list" />Schedule
           </NavItem>
-          </LinkContainer> : ''}
-          {isAuthenticated && user.roles === 'user' ? <LinkContainer to={'/pickdate'} activeClassName=''>
-            <NavItem>
-              <Glyphicon glyph='book' /> Studying
+            </LinkContainer> : ''}
+
+            {isAuthenticated && user.roles === 'user' ? <LinkContainer to={'/pickdate'} activeClassName=''>
+              <NavItem>
+                <Glyphicon glyph='book' /> Studying
             </NavItem>
-          </LinkContainer> : ''}
-          {isAuthenticated && user.roles === 'admin' ? <LinkContainer to={'/admin'} activeClassName=''>
-            <NavItem>
-              <Glyphicon glyph='cog' /> Admin
+            </LinkContainer> : ''}
+
+            {isAuthenticated && user.roles === 'admin' ? <LinkContainer to={'/admin'} activeClassName=''>
+              <NavItem>
+                <Glyphicon glyph='cog' /> Admin
               </NavItem>
-          </LinkContainer> : ''}
-        </Nav>
+            </LinkContainer> : ''}
+          </Nav>
 
-        <Nav className="navbar-right">
-          {isAuthenticated ? userLinks : reglinks}
-          {isAuthenticated ? logoutLink : loginLinks}
+          <Nav className="navbar-right">
+            {isAuthenticated ? userLinks : reglinks}
+            {isAuthenticated ? logoutLink : loginLinks}
+          </Nav>
 
-
-        </Nav>
+        </Navbar.Collapse>
       </Navbar>
     );
   }

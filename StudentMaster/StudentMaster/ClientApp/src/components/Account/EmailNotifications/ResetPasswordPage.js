@@ -18,6 +18,7 @@ import {
     Redirect
 } from 'react-router-dom';
 import queryString from 'query-string'
+import { isValidPassword } from '../../../utils/validators'
 
 
 
@@ -65,7 +66,7 @@ class ResestPasswordPage extends Component {
 
         let errors = {};
 
-        if (!/^(?=.*\d)(?=.*[a-zA-Z]).{6,20}$/.test(this.state.password)) errors.password = "Password must be at least 6 characters and contain digits, upper or lower case"
+        if (isValidPassword(this.state.password)) errors.password = "Password must be at least 6 characters and contain digits, upper or lower case"
         if (this.state.password === '') errors.password = "Can't be empty"
         if (this.state.confirmPassword === '') errors.confirmPassword = "Can't be empty"
 
@@ -86,11 +87,11 @@ class ResestPasswordPage extends Component {
             });
 
             this.props.resetPassword({
-                    email,
-                    code,
-                    password,
-                    confirmPassword
-                })
+                email,
+                code,
+                password,
+                confirmPassword
+            })
                 .then(
                     () => this.setState({
                         done: true
@@ -112,47 +113,47 @@ class ResestPasswordPage extends Component {
         const { errors, isLoading } = this.state;
         return (
             this.state.done ?
-                <Redirect to="/" /> : 
-            <Row>
-                <Col md={4} mdOffset={4}>
-                    <Panel>
-                        <div className="text-center mb-4">
-                            <h2 className="header">Reset password</h2>
-                            <p>Enter your new password.</p>
-                        </div>
-                        <form onSubmit={this.onSubmitForm}>
-                            {!!errors.invalid ?
-                                <div className="alert alert-danger">
-                                    {errors.invalid}.
+                <Redirect to="/" /> :
+                <Row>
+                    <Col md={4} mdOffset={4}>
+                        <Panel>
+                            <div className="text-center mb-4">
+                                <h2 className="header">Reset password</h2>
+                                <p>Enter your new password.</p>
+                            </div>
+                            <form onSubmit={this.onSubmitForm}>
+                                {!!errors.invalid ?
+                                    <div className="alert alert-danger">
+                                        {errors.invalid}.
                             </div> : ''}
 
-                            <div className={classnames('form-group', { 'has-error': !!errors.password })}>
-                                <label htmlFor="password">Password</label>
-                                <input type="password"
-                                    className="form-control"
-                                    id="password"
-                                    name="password"
-                                    value={this.state.password}
-                                    onChange={this.handleChange} />
-                                {!!errors.password ? <span className="help-block">{errors.password}</span> : ''}
-                            </div>
+                                <div className={classnames('form-group', { 'has-error': !!errors.password })}>
+                                    <label htmlFor="password">Password</label>
+                                    <input type="password"
+                                        className="form-control"
+                                        id="password"
+                                        name="password"
+                                        value={this.state.password}
+                                        onChange={this.handleChange} />
+                                    {!!errors.password ? <span className="help-block">{errors.password}</span> : ''}
+                                </div>
 
-                            <div className={classnames('form-group', { 'has-error': !!errors.confirmPassword })}>
-                                <label htmlFor="confirmPassword">Confirm Password</label>
-                                <input type="password"
-                                    className="form-control"
-                                    id="confirmPassword"
-                                    name="confirmPassword"
-                                    value={this.state.confirmPassword}
-                                    onChange={this.handleChange} />
-                                {!!errors.confirmPassword ? <span className="help-block">{errors.confirmPassword}</span> : ''}
-                            </div>
+                                <div className={classnames('form-group', { 'has-error': !!errors.confirmPassword })}>
+                                    <label htmlFor="confirmPassword">Confirm Password</label>
+                                    <input type="password"
+                                        className="form-control"
+                                        id="confirmPassword"
+                                        name="confirmPassword"
+                                        value={this.state.confirmPassword}
+                                        onChange={this.handleChange} />
+                                    {!!errors.confirmPassword ? <span className="help-block">{errors.confirmPassword}</span> : ''}
+                                </div>
 
-                            <button type="submit" className="btn btn-info btn-block" disabled={isLoading}>Reset Password</button>
-                        </form>
-                    </Panel>
-                </Col>
-            </Row>
+                                <button type="submit" className="btn btn-info btn-block" disabled={isLoading}>Reset Password</button>
+                            </form>
+                        </Panel>
+                    </Col>
+                </Row>
         );
     }
 }
